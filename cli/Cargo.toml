@@ -1,0 +1,11 @@
+[package]
+name = "palette-mapper-cli"
+edition.workspace = true
+version.workspace = true
+
+[dependencies]
+palette-mapper.workspace = true
+image.workspace = true
+
+[lints]
+workspace = true
