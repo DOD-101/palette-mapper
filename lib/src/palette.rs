@@ -2,12 +2,16 @@
 //!
 //! The main type is [`Palette`].
 use image::Rgba;
-use serde::{
-    Serialize,
-    de::{self, Deserialize, Deserializer, SeqAccess, Visitor},
-    ser::SerializeSeq,
+
+#[cfg(feature = "serde")]
+use {
+    serde::{
+        Serialize,
+        de::{self, Deserialize, Deserializer, SeqAccess, Visitor},
+        ser::SerializeSeq,
+    },
+    std::fmt,
 };
-use std::fmt;
 
 /// Helper macro for creating a [`Palette`]
 ///
@@ -135,6 +139,7 @@ impl From<Vec<Rgba<u8>>> for Palette {
     }
 }
 
+#[cfg(feature = "serde")]
 impl Serialize for Palette {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -150,6 +155,7 @@ impl Serialize for Palette {
     }
 }
 
+#[cfg(feature = "serde")]
 impl<'de> Deserialize<'de> for Palette {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -226,5 +232,18 @@ impl Iterator for IntoIter {
     type Item = Rgba<u8>;
     fn next(&mut self) -> Option<Self::Item> {
         self.this.next()
+    }
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    #[cfg(feature = "serde")]
+    fn serde_roundtrip() {
+        let p = color_pallete!([12, 45, 67, 200], [87, 212, 45]);
+
+        let v = serde_json::to_value(&p).unwrap();
+
+        assert_eq!(p, serde_json::from_value(v).unwrap());
     }
 }

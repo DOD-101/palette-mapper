@@ -1,11 +1,14 @@
 //! Library to convert (map) an image to color pallete
-use image::{GenericImage, GenericImageView, Rgba};
+use image::{DynamicImage, Rgba};
 
 pub mod distance;
 #[macro_use]
 pub mod palette;
 
 pub use {distance::Distance, palette::Palette};
+
+#[cfg(feature = "rayon")]
+use rayon::prelude::*;
 
 /// Take a color and find the closest color to it in a pallete
 ///
@@ -40,6 +43,19 @@ pub fn map_image_to_palette<D: distance::DistanceAlgorithm>(
     img: &mut image::DynamicImage,
     palette: &palette::Palette,
 ) {
+    map_image_to_palette_inner::<D>(img, palette);
+}
+
+#[cfg(not(feature = "rayon"))]
+/// Inner sequential implementation of [`map_image_to_palette`]
+///
+/// ## Panics
+///
+/// See [`map_image_to_palette`]
+pub fn map_image_to_palette_inner<D: distance::DistanceAlgorithm>(
+    img: &mut image::DynamicImage,
+    palette: &palette::Palette,
+) {
     let width = img.width();
     let height = img.height();
 
@@ -52,3 +68,43 @@ pub fn map_image_to_palette<D: distance::DistanceAlgorithm>(
         }
     }
 }
+
+#[cfg(feature = "rayon")]
+/// Inner parallel implementation of [`map_image_to_palette`]
+///
+/// ## Panics
+///
+/// See [`map_image_to_palette`]
+pub fn map_image_to_palette_inner<D: distance::DistanceAlgorithm>(
+    img: &mut image::DynamicImage,
+    palette: &palette::Palette,
+) {
+    match img {
+        DynamicImage::ImageRgb8(buf) => {
+            buf.par_enumerate_pixels_mut().for_each(|px| {
+                let px = px.2;
+
+                let pixel = image::Rgba([px[0], px[1], px[2], 255]);
+                let col = closest_color_in_pallete::<D>(&pixel, palette).unwrap();
+                *px = [col[0], col[1], col[2]].into();
+            });
+        }
+
+        DynamicImage::ImageRgba8(buf) => {
+            buf.par_enumerate_pixels_mut().for_each(|px| {
+                let px = px.2;
+
+                let pixel = image::Rgba([px[0], px[1], px[2], px[3]]);
+                let col = closest_color_in_pallete::<D>(&pixel, palette).unwrap();
+                *px = *col;
+            });
+        }
+        // fallback
+        d => {
+            let buf = d.clone().into_rgba8();
+
+            map_image_to_palette_inner::<D>(&mut DynamicImage::from(buf), palette);
+        }
+    }
+}
+
