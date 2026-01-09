@@ -2,10 +2,18 @@
 name = "palette-mapper-cli"
 edition.workspace = true
 version.workspace = true
+default-run = "palette-mapper"
 
 [dependencies]
 palette-mapper.workspace = true
 image.workspace = true
+clap.workspace = true
+anyhow = "1.0.100"
+serde_json = "1.0.149"
 
 [lints]
 workspace = true
+
+[[bin]]
+name = "palette-mapper"
+path = "src/main.rs"

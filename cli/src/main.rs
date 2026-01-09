@@ -1,52 +1,107 @@
-//! CLI tool for `palette_mapper` lib.
-use palette_mapper::{color_pallete, map_image_to_palette};
+//! CLI tool for `palette_mapper` lib
+//!
+//! ## Currently supported formats for pallete
+//!
+//! The used palette is read from a file. Currently supported formats for this file are:
+//!
+//! - json
+//!
+//! ## Usage
+//!
+//! `palette-mapper ./input.png palette.json`
+//!
+//! For more options run `palette-mapper --help`
+use anyhow::{Ok, Result, anyhow, bail};
+use clap::Parser;
+use image::DynamicImage;
+use std::{
+    fs::File,
+    io::BufReader,
+    path::{Path, PathBuf},
+};
 
-fn main() {
-    let palette = color_pallete!(
-        // Base tones
-        [24, 24, 37],    // base
-        [30, 30, 46],    // mantle
-        [17, 17, 27],    // crust
-        [205, 214, 244], // text
-        [166, 173, 200], // subtext0
-        [186, 194, 222], // subtext1
-        [108, 112, 134], // overlay0
-        [127, 132, 156], // overlay1
-        [147, 153, 178], // overlay2
-        [88, 91, 112],   // surface2
-        [69, 71, 90],    // surface1
-        [49, 50, 68],    // surface0
-        // Accent colors
-        [243, 139, 168], // red
-        [235, 160, 172], // maroon
-        [250, 179, 135], // peach
-        [249, 226, 175], // yellow
-        [166, 227, 161], // green
-        [148, 226, 213], // teal
-        [137, 220, 235], // sky
-        [116, 199, 236], // sapphire
-        [137, 180, 250], // blue
-        [180, 190, 254], // lavender
-        [203, 166, 247], // mauve
-        [245, 194, 231], // pink
-        [242, 205, 205], // flamingo
-        [245, 224, 220]  // rosewater
+use palette_mapper::{Palette, map_image_to_palette};
+
+/// CLI struct containing options passed by user
+#[derive(Parser)]
+#[clap(about = "Convert an image to a color palette")]
+struct Cli {
+    /// Path to input image
+    input: PathBuf,
+    /// Path to file containing palette
+    // TODO: Allow passing values by stdin
+    palette: PathBuf,
+    /// Distance Algorithm used to determine distance between colors
+    // TODO: Figure out this type
+    #[arg(long, short)]
+    algorithm: Option<String>,
+    /// Output path
+    ///
+    /// Having the path end with ".{ext}" will replace the extension with that of the input file.
+    #[arg(long, short, default_value = "output.{ext}")]
+    output: PathBuf,
+}
+
+fn main() -> Result<()> {
+    let cli = Cli::parse();
+
+    let palette = get_palette(cli.palette)?;
+
+    let mut img = open_image(&cli.input)?;
+
+    map_image_to_palette::<palette_mapper::distance::EuclidianDistance>(&mut img, &palette);
+
+    let mut output_path = cli.output;
+
+    #[allow(clippy::literal_string_with_formatting_args, reason = "False positive")]
+    if output_path.extension().is_some_and(|ext| ext == "{ext}") {
+        if let Some(input_ext) = cli.input.extension() {
+            output_path.set_extension(input_ext);
+        } else {
+            output_path.set_extension("");
+        }
+    }
+
+    img.save(output_path)
+        .map_err(|_| anyhow!("unsupported output format"))?;
+
+    Ok(())
+}
+
+/// Attempt to read the provided path and deserialize the contents to a [`Palette`]
+///
+/// Currently only supports json.
+fn get_palette(palette: PathBuf) -> Result<Palette> {
+    let format = palette.extension().map_or_else(
+        || {
+            eprintln!("No extension on palette path. Assuming line-wise.");
+
+            "line-wise".to_string()
+        },
+        |v| v.to_string_lossy().to_string(),
     );
 
-    let start = std::time::Instant::now();
-    let mut img = image::ImageReader::open("./ap251227-html-apollo-17.jpg")
-        .unwrap()
+    match format.as_str() {
+        "json" => {
+            let file = File::open(palette)?;
+
+            let buffered = BufReader::new(file);
+
+            Ok(serde_json::from_reader(buffered)?)
+        }
+        _ => bail!("Unsupported format for palette. Supported formats are: json"),
+    }
+}
+
+/// Opens the input image at the given path
+fn open_image<P>(path: P) -> Result<DynamicImage>
+where
+    P: AsRef<Path>,
+{
+    Ok(image::ImageReader::open(path)
+        .map_err(|_| anyhow!("could not open input image"))?
         .with_guessed_format()
-        .unwrap()
+        .map_err(|_| anyhow!("could not determine input image format"))?
         .decode()
-        .unwrap();
-    dbg!(start.elapsed());
-
-    let start = std::time::Instant::now();
-    map_image_to_palette::<palette_mapper::distance::EuclidianDistance>(&mut img, &palette);
-    dbg!(start.elapsed());
-
-    let start = std::time::Instant::now();
-    img.save("output.png").unwrap();
-    dbg!(start.elapsed());
+        .expect("Format must have been determined at this point!"))
 }
