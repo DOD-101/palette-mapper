@@ -1,5 +1,11 @@
 //! Library to convert (map) an image to color pallete
-use image::{DynamicImage, Rgba};
+use image::Rgba;
+
+#[cfg(feature = "rayon")]
+use image::DynamicImage;
+
+#[cfg(not(feature = "rayon"))]
+use image::{GenericImage, GenericImageView};
 
 pub mod distance;
 #[macro_use]
@@ -52,7 +58,7 @@ pub fn map_image_to_palette<D: distance::DistanceAlgorithm>(
 /// ## Panics
 ///
 /// See [`map_image_to_palette`]
-pub fn map_image_to_palette_inner<D: distance::DistanceAlgorithm>(
+fn map_image_to_palette_inner<D: distance::DistanceAlgorithm>(
     img: &mut image::DynamicImage,
     palette: &palette::Palette,
 ) {
@@ -75,7 +81,7 @@ pub fn map_image_to_palette_inner<D: distance::DistanceAlgorithm>(
 /// ## Panics
 ///
 /// See [`map_image_to_palette`]
-pub fn map_image_to_palette_inner<D: distance::DistanceAlgorithm>(
+fn map_image_to_palette_inner<D: distance::DistanceAlgorithm>(
     img: &mut image::DynamicImage,
     palette: &palette::Palette,
 ) {
