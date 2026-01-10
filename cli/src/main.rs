@@ -49,7 +49,7 @@ fn main() -> Result<()> {
 
     let mut img = open_image(&cli.input)?;
 
-    map_image_to_palette::<palette_mapper::distance::EuclidianDistance>(&mut img, &palette);
+    map_image_to_palette::<palette_mapper::distance::EuclideanDistance>(&mut img, &palette);
 
     let mut output_path = cli.output;
 

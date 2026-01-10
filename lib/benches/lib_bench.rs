@@ -4,7 +4,7 @@
 
 use criterion::{BenchmarkId, Criterion, criterion_group, criterion_main};
 use image::{DynamicImage, ImageBuffer, Rgba};
-use palette_mapper::{Palette, color_pallete, distance::EuclidianDistance, map_image_to_palette};
+use palette_mapper::{Palette, color_pallete, distance::EuclideanDistance, map_image_to_palette};
 use rayon::iter::ParallelIterator;
 use std::{hint::black_box, sync::LazyLock, time::Duration};
 
@@ -47,7 +47,7 @@ fn map_imgage_to_palette(c: &mut Criterion) {
     group.sample_size(100);
     group.measurement_time(Duration::from_secs(10));
     for size in sizes {
-        // "map_image_to_palette 500x500 palette-16 euclidian"
+        // "map_image_to_palette 500x500 palette-16 euclidean"
         group.bench_with_input(
             BenchmarkId::from_parameter(format!("{}x{}", size.0, size.1)),
             &size,
@@ -57,7 +57,7 @@ fn map_imgage_to_palette(c: &mut Criterion) {
                 let palette = &TESTING_PALLETE;
 
                 b.iter(|| {
-                    map_image_to_palette::<EuclidianDistance>(
+                    map_image_to_palette::<EuclideanDistance>(
                         black_box(&mut img),
                         black_box(palette),
                     );

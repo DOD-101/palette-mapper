@@ -16,7 +16,7 @@ use syn::{
 ///
 /// ```text
 /// #[NoAlpha]
-/// EuclidianDistanceNoAlpha
+/// EuclideanDistanceNoAlpha
 /// ```
 struct Algorithm {
     /// Outer attributes attached to the identifier.
@@ -182,7 +182,7 @@ pub fn algorithms(input: TokenStream) -> TokenStream {
         #[cfg(test)]
         mod test {
             use crate::{
-                distance::{DistanceAlgorithm, EuclidianDistance},
+                distance::{DistanceAlgorithm, EuclideanDistance},
                 rgba,
             };
 

@@ -31,7 +31,7 @@ use image::Rgba;
 ///
 /// See [module level docs](`self`)
 #[derive(Default, Debug)]
-pub struct Distance<A: DistanceAlgorithm = EuclidianDistance> {
+pub struct Distance<A: DistanceAlgorithm = EuclideanDistance> {
     /// The measured colors
     distance: u32,
     /// Marker for the algorithm used
@@ -109,10 +109,10 @@ palette_mapper_macros::algorithms! {
     /// Calculation of the distance of two colors using the [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
     ///
     /// This Algorithm respects the alpha value.
-    EuclidianDistance
+    EuclideanDistance
 }
 
-impl DistanceAlgorithm for EuclidianDistance {
+impl DistanceAlgorithm for EuclideanDistance {
     #[allow(clippy::eq_op, reason = "False positive")]
     fn distance(left: &Rgba<u8>, right: &Rgba<u8>) -> u32 {
         let left = left.0.map(i32::from);
