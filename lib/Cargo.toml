@@ -1,5 +1,5 @@
 [package]
-name = "palette-mapper"
+name = "palette-mapper-lib"
 edition.workspace = true
 version.workspace = true
 
@@ -7,10 +7,13 @@ version.workspace = true
 image = { workspace = true, features = [] }
 rayon = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
+strum = { workspace = true, optional = true }
+palette-mapper-macros.workspace = true
 
 [features]
 default = ["rayon", "default-formats"]
 serde = ["image/serde", "dep:serde"]
+strum = ["dep:strum"]
 rayon = ["image/rayon", "dep:rayon"]
 default-formats = ["image/default-formats"]
 
@@ -28,3 +31,7 @@ rand.workspace = true
 [[bench]]
 name = "lib_bench"
 harness = false
+
+[lib]
+name = "palette_mapper"
+path = "src/lib.rs"

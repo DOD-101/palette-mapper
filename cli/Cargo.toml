@@ -5,7 +5,7 @@ version.workspace = true
 default-run = "palette-mapper"
 
 [dependencies]
-palette-mapper = { workspace = true, features = ["default", "serde"] }
+palette-mapper-lib = { workspace = true, features = ["default", "serde"] }
 image = { workspace = true, features = ["default", "serde"] }
 clap.workspace = true
 anyhow = "1.0.100"
