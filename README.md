@@ -22,7 +22,7 @@ Palette Mapper is split into 3 different things:
     
     - [ ] Benchmarking with hyperfine for `cli`
 
-    - [ ] Snapshot testing for `lib`
+    - [x] Snapshot testing for `lib`
 
 - [ ] Create `web`
 

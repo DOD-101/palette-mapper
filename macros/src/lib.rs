@@ -1,6 +1,8 @@
 //! proc macros for pallete-mapper-* crates
 //!
 //! These macros are for internal use and not for end-consumers of the library or other components.
+use std::fs::read_dir;
+
 use heck::ToSnekCase;
 use proc_macro::TokenStream;
 use quote::{ToTokens, format_ident, quote};
@@ -136,7 +138,7 @@ pub fn algorithms(input: TokenStream) -> TokenStream {
     let match_arms = algorithms.iter().map(|a| {
         let ident = &a.ident;
         quote! {
-            Algorithms::#ident => #ident
+            Algorithms::#ident => #ident::distance(left, right)
         }
     });
 
@@ -163,14 +165,13 @@ pub fn algorithms(input: TokenStream) -> TokenStream {
     let expanded = quote! {
         #[cfg_attr(feature = "strum", derive(strum::EnumString, strum::Display, strum::EnumIter, strum::EnumCount, strum::VariantArray, strum::VariantNames))]
         /// Enumeration of all available distance algorithms.
+        #[derive(Debug, Clone, Copy)]
         pub enum Algorithms {
             #( #enum_variants, )*
         }
 
         impl Algorithms {
-            /// Returns the concrete algorithm implementation
-            /// corresponding to this enum variant.
-            pub fn algorithm(&self) -> impl DistanceAlgorithm {
+            fn distance(&self, left: &Rgba<u8>, right: &Rgba<u8>) -> u32 {
                 match self {
                     #( #match_arms, )*
                 }
@@ -182,9 +183,36 @@ pub fn algorithms(input: TokenStream) -> TokenStream {
         #[cfg(test)]
         mod test {
             use crate::{
-                distance::{DistanceAlgorithm, EuclideanDistance},
+                Palette, color_pallete,
+                map_image_to_palette,
+                distance::*, // to get all algorithms
                 rgba,
             };
+            use image::{DynamicImage, ImageBuffer, ImageReader};
+            use std::sync::LazyLock;
+            use std::{io::Cursor, path::Path};
+
+            static TESTING_PALLETE: LazyLock<Palette> = LazyLock::new(|| {
+                color_pallete!(
+                    [255, 0, 0, 255],     // Red
+                    [255, 128, 0, 255],   // Orange
+                    [255, 255, 0, 255],   // Yellow
+                    [128, 255, 0, 255],   // Yellow-Green
+                    [0, 255, 0, 255],     // Green
+                    [0, 255, 128, 255],   // Spring Green
+                    [0, 255, 255, 255],   // Cyan
+                    [0, 128, 255, 255],   // Azure
+                    [0, 0, 255, 255],     // Blue
+                    [128, 0, 255, 255],   // Violet
+                    [255, 0, 255, 255],   // Magenta
+                    [255, 0, 128, 255],   // Rose
+                    [255, 255, 255, 255], // White
+                    [192, 192, 192, 255], // Light Gray
+                    [64, 64, 64, 255],    // Dark Gray
+                    [0, 0, 0, 255]        // Black
+                )
+            });
+
 
             #algorithm_tests
         }
@@ -276,5 +304,44 @@ fn algorithm_tests(algorithm: &Algorithm, token_stream: &mut proc_macro2::TokenS
         };
 
         alpha.to_tokens(token_stream);
+    }
+
+    // snapshot tests
+    let dir = read_dir("assets/test-imgs/").expect("Failed to generate snapshot tests.");
+
+    for entries in dir {
+        let path = entries
+            .expect("Failed to read snapshot input image.")
+            .path();
+
+        if let Some(file_name) = path.file_stem() {
+            let test_name = format_ident!("{}_{}", algorithm_prefix, file_name.to_string_lossy());
+
+            let img_path = format!("../../{}", path.to_string_lossy());
+
+            let algorithm = &algorithm.ident;
+
+            let snapshot_test = quote! {
+                #[test]
+                fn #test_name() {
+                    let mut img = ImageReader::new(Cursor::new(include_bytes!(#img_path)));
+
+                    img.set_format(image::ImageFormat::Png);
+
+                    let mut img = img.decode().unwrap();
+
+                    map_image_to_palette::<#algorithm>(&mut img, &TESTING_PALLETE);
+                    let mut buf = Vec::new();
+
+                    let encoder = image::codecs::png::PngEncoder::new(&mut buf);
+
+                    img.write_with_encoder(encoder).unwrap();
+
+                    insta::assert_binary_snapshot!(".png", buf);
+                }
+            };
+
+            snapshot_test.to_tokens(token_stream);
+        }
     }
 }

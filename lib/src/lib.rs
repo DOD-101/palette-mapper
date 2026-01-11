@@ -113,4 +113,3 @@ fn map_image_to_palette_inner<D: distance::DistanceAlgorithm>(
         }
     }
 }
-
