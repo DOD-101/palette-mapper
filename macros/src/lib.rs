@@ -138,7 +138,7 @@ pub fn algorithms(input: TokenStream) -> TokenStream {
     let match_arms = algorithms.iter().map(|a| {
         let ident = &a.ident;
         quote! {
-            Algorithms::#ident => #ident::distance(left, right)
+            Algorithms::#ident => #ident::default().distance(left, right)
         }
     });
 
@@ -157,6 +157,7 @@ pub fn algorithms(input: TokenStream) -> TokenStream {
         quote! {
             #(#attrs)*
             #[doc = #alpha_doc]
+            #[derive(Debug, Clone, Copy, Default)]
             pub struct #ident;
         }
     });
@@ -170,7 +171,7 @@ pub fn algorithms(input: TokenStream) -> TokenStream {
             #( #enum_variants, )*
         }
 
-        impl Algorithms {
+        impl DistanceAlgorithm for Algorithms {
             fn distance(&self, left: &Rgba<u8>, right: &Rgba<u8>) -> u32 {
                 match self {
                     #( #match_arms, )*
@@ -244,7 +245,7 @@ fn algorithm_tests(algorithm: &Algorithm, token_stream: &mut proc_macro2::TokenS
         #[test]
         fn #same_color_name() {
             assert_eq!(
-                #ident::distance(&rgba!(255, 255, 255), &rgba!(255, 255, 255)),
+                #ident::default().distance(&rgba!(255, 255, 255), &rgba!(255, 255, 255)),
                 0
             );
         }
@@ -252,7 +253,7 @@ fn algorithm_tests(algorithm: &Algorithm, token_stream: &mut proc_macro2::TokenS
         #[test]
         fn #white_black_name() {
             assert_ne!(
-                #ident::distance(&rgba!(255, 255, 255), &rgba!(0, 0, 0)),
+                #ident::default().distance(&rgba!(255, 255, 255), &rgba!(0, 0, 0)),
                 0
             );
         }
@@ -260,15 +261,15 @@ fn algorithm_tests(algorithm: &Algorithm, token_stream: &mut proc_macro2::TokenS
         #[test]
         fn #grey_name() {
             assert!(
-                #ident::distance(&rgba!(255, 255, 255), &rgba!(0, 0, 0))
-                    > #ident::distance(&rgba!(255, 255, 255), &rgba!(127, 127, 127))
+                #ident::default().distance(&rgba!(255, 255, 255), &rgba!(0, 0, 0))
+                    > #ident::default().distance(&rgba!(255, 255, 255), &rgba!(127, 127, 127))
             );
         }
 
         #[test]
         fn #red_name() {
             assert_ne!(
-                #ident::distance(&rgba!(255, 255, 255), &rgba!(0, 255, 255)),
+                #ident::default().distance(&rgba!(255, 255, 255), &rgba!(0, 255, 255)),
                 0
             );
         }
@@ -276,7 +277,7 @@ fn algorithm_tests(algorithm: &Algorithm, token_stream: &mut proc_macro2::TokenS
         #[test]
         fn #green_name() {
             assert_ne!(
-                #ident::distance(&rgba!(255, 255, 255), &rgba!(255, 0, 255)),
+                #ident::default().distance(&rgba!(255, 255, 255), &rgba!(255, 0, 255)),
                 0
             );
         }
@@ -284,7 +285,7 @@ fn algorithm_tests(algorithm: &Algorithm, token_stream: &mut proc_macro2::TokenS
         #[test]
         fn #blue_name() {
             assert_ne!(
-                #ident::distance(&rgba!(255, 255, 255), &rgba!(255, 255, 0)),
+                #ident::default().distance(&rgba!(255, 255, 255), &rgba!(255, 255, 0)),
                 0
             );
         }
@@ -297,7 +298,7 @@ fn algorithm_tests(algorithm: &Algorithm, token_stream: &mut proc_macro2::TokenS
             #[test]
             fn #alpha_name() {
                 assert_ne!(
-                    #ident::distance(&rgba!(255, 255, 255, 255), &rgba!(255, 255, 255, 0)),
+                    #ident::default().distance(&rgba!(255, 255, 255, 255), &rgba!(255, 255, 255, 0)),
                     0
                 );
             }
@@ -330,7 +331,7 @@ fn algorithm_tests(algorithm: &Algorithm, token_stream: &mut proc_macro2::TokenS
 
                     let mut img = img.decode().unwrap();
 
-                    map_image_to_palette::<#algorithm>(&mut img, &TESTING_PALLETE);
+                    map_image_to_palette(&mut img, &TESTING_PALLETE, &#algorithm::default());
                     let mut buf = Vec::new();
 
                     let encoder = image::codecs::png::PngEncoder::new(&mut buf);

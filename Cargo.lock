@@ -879,6 +879,7 @@ dependencies = [
  "image",
  "palette-mapper-lib",
  "serde_json",
+ "strum",
 ]
 
 [[package]]

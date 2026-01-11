@@ -63,9 +63,9 @@ impl<A: DistanceAlgorithm> Distance<A> {
     ///
     /// The two points passed are calculated with the given algorithm
     #[must_use]
-    pub fn new(left: &Rgba<u8>, right: &Rgba<u8>) -> Self {
+    pub fn new(left: &Rgba<u8>, right: &Rgba<u8>, algorithm: &A) -> Self {
         Self {
-            distance: A::distance(left, right),
+            distance: algorithm.distance(left, right),
             algorithm: PhantomData,
         }
     }
@@ -102,7 +102,7 @@ impl<A: DistanceAlgorithm> Distance<A> {
 /// similar) two colors are both implementations ok.
 pub trait DistanceAlgorithm {
     /// Function used to determine the distance of two colors
-    fn distance(left: &Rgba<u8>, right: &Rgba<u8>) -> u32;
+    fn distance(&self, left: &Rgba<u8>, right: &Rgba<u8>) -> u32;
 }
 
 palette_mapper_macros::algorithms! {
@@ -114,7 +114,7 @@ palette_mapper_macros::algorithms! {
 
 impl DistanceAlgorithm for EuclideanDistance {
     #[allow(clippy::eq_op, reason = "False positive")]
-    fn distance(left: &Rgba<u8>, right: &Rgba<u8>) -> u32 {
+    fn distance(&self, left: &Rgba<u8>, right: &Rgba<u8>) -> u32 {
         let left = left.0.map(i32::from);
         let right = right.0.map(i32::from);
 

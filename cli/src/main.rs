@@ -20,7 +20,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use palette_mapper::{Palette, map_image_to_palette};
+use palette_mapper::{Palette, distance::Algorithms, map_image_to_palette};
 
 /// CLI struct containing options passed by user
 #[derive(Parser)]
@@ -32,9 +32,10 @@ struct Cli {
     // TODO: Allow passing values by stdin
     palette: PathBuf,
     /// Distance Algorithm used to determine distance between colors
-    // TODO: Figure out this type
-    #[arg(long, short)]
-    algorithm: Option<String>,
+    #[arg(long, short, value_enum, value_parser =
+        clap::builder::PossibleValuesParser::new(<Algorithms as strum::VariantNames>::VARIANTS),
+        default_value = "EuclideanDistance")]
+    algorithm: Algorithms,
     /// Output path
     ///
     /// Having the path end with ".{ext}" will replace the extension with that of the input file.
@@ -49,7 +50,9 @@ fn main() -> Result<()> {
 
     let mut img = open_image(&cli.input)?;
 
-    map_image_to_palette::<palette_mapper::distance::EuclideanDistance>(&mut img, &palette);
+    let algorithm = &cli.algorithm;
+
+    map_image_to_palette(&mut img, &palette, algorithm);
 
     let mut output_path = cli.output;
 
