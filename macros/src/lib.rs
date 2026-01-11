@@ -164,7 +164,7 @@ pub fn algorithms(input: TokenStream) -> TokenStream {
 
     // Final expansion.
     let expanded = quote! {
-        #[cfg_attr(feature = "strum", derive(strum::EnumString, strum::Display, strum::EnumIter, strum::EnumCount, strum::VariantArray, strum::VariantNames))]
+        #[cfg_attr(any(feature = "strum", test), derive(strum::EnumString, strum::Display, strum::EnumIter, strum::EnumCount, strum::VariantArray, strum::VariantNames))]
         /// Enumeration of all available distance algorithms.
         #[derive(Debug, Clone, Copy)]
         pub enum Algorithms {
