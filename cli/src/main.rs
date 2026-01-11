@@ -12,7 +12,10 @@
 //!
 //! For more options run `palette-mapper --help`
 use anyhow::{Ok, Result, anyhow, bail};
-use clap::Parser;
+use clap::{
+    Parser,
+    builder::{PossibleValuesParser, TypedValueParser},
+};
 use image::DynamicImage;
 use std::{
     fs::File,
@@ -32,8 +35,8 @@ struct Cli {
     // TODO: Allow passing values by stdin
     palette: PathBuf,
     /// Distance Algorithm used to determine distance between colors
-    #[arg(long, short, value_enum, value_parser =
-        clap::builder::PossibleValuesParser::new(<Algorithms as strum::VariantNames>::VARIANTS),
+    #[arg(long, short, value_enum,
+        value_parser = PossibleValuesParser::new(<Algorithms as strum::VariantNames>::VARIANTS).map(|s| s.parse::<Algorithms>().unwrap()),
         default_value = "EuclideanDistance")]
     algorithm: Algorithms,
     /// Output path
