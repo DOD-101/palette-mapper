@@ -106,10 +106,12 @@ pub trait DistanceAlgorithm {
 }
 
 palette_mapper_macros::algorithms! {
-    /// Calculation of the distance of two colors using the [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
-    ///
-    /// This Algorithm respects the alpha value.
+    /// [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
     EuclideanDistance
+
+    /// [Manhattan distance](https://en.wikipedia.org/wiki/Taxicab_geometry)
+    #[NoAlpha]
+    ManhattanDistance
 }
 
 impl DistanceAlgorithm for EuclideanDistance {
@@ -122,6 +124,20 @@ impl DistanceAlgorithm for EuclideanDistance {
             + (left[1] - right[1]).pow(2)
             + (left[2] - right[2]).pow(2)
             + (left[3] - right[3]).pow(2))
+        .try_into()
+        .unwrap()
+    }
+}
+
+impl DistanceAlgorithm for ManhattanDistance {
+    fn distance(&self, left: &Rgba<u8>, right: &Rgba<u8>) -> u32 {
+        let left = left.0.map(i32::from);
+        let right = right.0.map(i32::from);
+
+        ((left[0] - right[0]).abs()
+            + (left[1] - right[1]).abs()
+            + (left[2] - right[2]).abs()
+            + (left[3] - right[3]).abs())
         .try_into()
         .unwrap()
     }

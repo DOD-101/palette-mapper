@@ -36,6 +36,8 @@ Palette Mapper is split into 3 different things:
 
     - [ ] CIEDE2000
 
+    - [x] Manhattan Distance
+
 - [ ] Add examples
 
 - [ ] *(Possibly)* Expand options for cli
