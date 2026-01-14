@@ -10,6 +10,7 @@ use image::{GenericImage, GenericImageView};
 pub mod distance;
 #[macro_use]
 pub mod palette;
+mod conversions;
 
 pub use {distance::Distance, palette::Palette};
 

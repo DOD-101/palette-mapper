@@ -9,6 +9,7 @@ rayon = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 strum = { workspace = true, optional = true }
 palette-mapper-macros.workspace = true
+thiserror = "2.0.17"
 
 [features]
 default = ["rayon", "default-formats"]
