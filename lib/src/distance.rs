@@ -27,6 +27,8 @@ use std::marker::PhantomData;
 
 use image::Rgba;
 
+use crate::conversions::RgbConversionExt;
+
 /// A distance between two colors
 ///
 /// See [module level docs](`self`)
@@ -111,6 +113,13 @@ palette_mapper_macros::algorithms! {
 
     /// [Manhattan distance](https://en.wikipedia.org/wiki/Taxicab_geometry)
     ManhattanDistance
+
+    /// [CIE76](https://en.wikipedia.org/wiki/Color_difference#CIE76)
+    ///
+    /// This was the first formula used by the CIE to calculate Delta E using.
+    /// It is in essence the [`EuclideanDistance`] in CIELAB coordinates.
+    #[NoAlpha]
+    CIE76
 }
 
 impl DistanceAlgorithm for EuclideanDistance {
@@ -139,5 +148,24 @@ impl DistanceAlgorithm for ManhattanDistance {
             + (left[3] - right[3]).abs())
         .try_into()
         .unwrap()
+    }
+}
+
+impl DistanceAlgorithm for CIE76 {
+    #[allow(
+        clippy::cast_sign_loss,
+        clippy::cast_possible_truncation,
+        reason = "The cast should cause no issues here. If it does there is a bug further up."
+    )]
+    fn distance(&self, left: &Rgba<u8>, right: &Rgba<u8>) -> u32 {
+        let left = crate::conversions::Lab::from(left.to_rgb()).0;
+        let right = crate::conversions::Lab::from(right.to_rgb()).0;
+
+        let val = (left[2] - right[2]).mul_add(
+            left[2] - right[2],
+            (left[1] - right[1]).mul_add(left[1] - right[1], (left[0] - right[0]).powi(2)),
+        ) * 100_000.0;
+
+        val as u32
     }
 }

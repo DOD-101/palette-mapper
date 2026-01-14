@@ -1,0 +1,6 @@
+---
+source: lib/src/distance.rs
+expression: buf
+extension: png
+snapshot_kind: binary
+---
