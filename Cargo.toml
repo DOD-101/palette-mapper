@@ -1,5 +1,5 @@
 [workspace]
-members = ["lib", "cli", "macros"]
+members = ["cli", "lib", "macros"]
 resolver = "3"
 
 [workspace.package]
@@ -9,17 +9,18 @@ version = "0.1.0"
 [workspace.dependencies]
 palette-mapper-lib = { version = "*", path = "./lib", default-features = false }
 palette-mapper-macros = { version = "*", path = "./macros" }
-image = { version = "0.25.9", default-features = false }
+
 clap = { version = "4.5.54", features = ["derive", "string"] }
-serde = { version = "1.0.228", features = ["derive"] }
+image = { version = "0.25.9", default-features = false }
 rayon.version = "1.11.0"
-strum = { version = "0.27", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
+strum = { version = "0.27", features = ["derive"] }
 
 # dev
 criterion = "0.8.1"
-rand = "0.9.2"
 insta = "1.46.0"
+rand = "0.9.2"
 
 [workspace.lints.rust]
 missing_docs = "warn"
@@ -31,7 +32,7 @@ style = { level = "warn", priority = -1 }
 
 allow_attributes_without_reason = "deny"
 doc_broken_link = "warn"
-future_not_send = "allow"
 missing_docs_in_private_items = "warn"
-significant_drop_tightening = "allow"
 too_long_first_doc_paragraph = "warn"
+
+arbitrary_source_item_ordering = "deny"

@@ -29,6 +29,22 @@ use image::Rgba;
 
 use crate::conversions::RgbConversionExt;
 
+/// Trait representing an algorithm used to calculate the distance between two colors
+///
+/// ## Implementing this trait
+///
+/// When implementing this trait it is not relevant what the concrete values returned by
+/// [`DistanceAlgorithm::distance`] are. They are never exposed to the user directly. They must
+/// merely be a consistent measurement of how close two colors are to one another.  
+///
+/// This means one Algorithm may return values in the range `0-100` while another uses the entire
+/// range of [`u32`] values. As long as the values returned allow for comparing how close (or
+/// similar) two colors are both implementations ok.
+pub trait DistanceAlgorithm {
+    /// Function used to determine the distance of two colors
+    fn distance(&self, left: &Rgba<u8>, right: &Rgba<u8>) -> u32;
+}
+
 /// A distance between two colors
 ///
 /// See [module level docs](`self`)
@@ -89,22 +105,6 @@ impl<A: DistanceAlgorithm> Distance<A> {
             algorithm: PhantomData,
         }
     }
-}
-
-/// Trait representing an algorithm used to calculate the distance between two colors
-///
-/// ## Implementing this trait
-///
-/// When implementing this trait it is not relevant what the concrete values returned by
-/// [`DistanceAlgorithm::distance`] are. They are never exposed to the user directly. They must
-/// merely be a consistent measurement of how close two colors are to one another.  
-///
-/// This means one Algorithm may return values in the range `0-100` while another uses the entire
-/// range of [`u32`] values. As long as the values returned allow for comparing how close (or
-/// similar) two colors are both implementations ok.
-pub trait DistanceAlgorithm {
-    /// Function used to determine the distance of two colors
-    fn distance(&self, left: &Rgba<u8>, right: &Rgba<u8>) -> u32;
 }
 
 palette_mapper_macros::algorithms! {

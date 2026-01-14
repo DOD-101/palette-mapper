@@ -1,13 +1,13 @@
 [package]
-name = "palette-mapper-macros"
 edition.workspace = true
+name = "palette-mapper-macros"
 version.workspace = true
 
 [dependencies]
+heck = "0.5.0"
 proc-macro2 = "1.0.105"
 quote = "1.0.43"
 syn = "2.0.114"
-heck = "0.5.0"
 
 [lints]
 workspace = true

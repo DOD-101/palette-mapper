@@ -1,4 +1,8 @@
 //! Library to convert (map) an image to color pallete
+mod conversions;
+pub mod distance;
+pub mod palette;
+
 use image::Rgba;
 
 #[cfg(feature = "rayon")]
@@ -6,11 +10,6 @@ use image::DynamicImage;
 
 #[cfg(not(feature = "rayon"))]
 use image::{GenericImage, GenericImageView};
-
-pub mod distance;
-#[macro_use]
-pub mod palette;
-mod conversions;
 
 pub use {distance::Distance, palette::Palette};
 
