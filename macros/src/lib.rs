@@ -329,14 +329,14 @@ fn algorithm_tests(algorithm: &Algorithm, token_stream: &mut proc_macro2::TokenS
 
                     img.set_format(image::ImageFormat::Png);
 
-                    let mut img = img.decode().unwrap();
+                    let mut img = img.decode().expect("Failed to decode");
 
                     map_image_to_palette(&mut img, &TESTING_PALLETE, &#algorithm::default());
                     let mut buf = Vec::new();
 
                     let encoder = image::codecs::png::PngEncoder::new(&mut buf);
 
-                    img.write_with_encoder(encoder).unwrap();
+                    img.write_with_encoder(encoder).expect("Failed to encode.");
 
                     insta::assert_binary_snapshot!(".png", buf);
                 }

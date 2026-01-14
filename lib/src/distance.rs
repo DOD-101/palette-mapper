@@ -110,7 +110,6 @@ palette_mapper_macros::algorithms! {
     EuclideanDistance
 
     /// [Manhattan distance](https://en.wikipedia.org/wiki/Taxicab_geometry)
-    #[NoAlpha]
     ManhattanDistance
 }
 
