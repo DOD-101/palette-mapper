@@ -18,9 +18,9 @@ Palette Mapper is split into 3 different things:
 
 - [ ] Add testing to `lib` and `cli`
 
-    - [ ] Benchmarking with criterion and lai for `lib`
-    
     - [ ] Benchmarking with hyperfine for `cli`
+
+    - [x] Benchmarking with criterion for `lib`
 
     - [x] Snapshot testing for `lib`
 
@@ -30,11 +30,11 @@ Palette Mapper is split into 3 different things:
 
 - [ ] Implement more distance algorithms
 
-    - [ ] CIE76 LAB
-
-    - [ ] Delta E
+    - [ ] CIE Hybrid
 
     - [ ] CIEDE2000
+
+    - [x] CIE76 LAB
 
     - [x] Manhattan Distance
 
@@ -47,8 +47,6 @@ Palette Mapper is split into 3 different things:
     - [ ] Batch processing
 
     - [ ] Lightening 
-
-
 
 ## 🖼️ Examples 🖼️
 
