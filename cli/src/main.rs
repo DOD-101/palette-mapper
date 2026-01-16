@@ -23,7 +23,11 @@ use std::{
     path::{Path, PathBuf},
 };
 
+mod step;
+
 use palette_mapper::{Palette, distance::Algorithms, map_image_to_palette};
+
+use step::StepBuilder;
 
 /// CLI struct containing options passed by user
 #[derive(Parser)]
@@ -44,21 +48,39 @@ struct Cli {
     /// Having the path end with ".{ext}" will replace the extension with that of the input file.
     #[arg(long, short, default_value = "output.{ext}")]
     output: PathBuf,
+    /// If an interactive output of the individual steps should be printed
+    ///
+    /// Disabling this can be useful in scripting context where pretty output is not needed.
+    #[arg(long)]
+    non_interactive: bool,
 }
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
+    if cli.non_interactive {
+        let _ = step::INTERACTIVE.set(false);
+    }
+
+    let mut steps = StepBuilder::new(vec![
+        "Loading pallete".to_string(),
+        "Loading image".to_string(),
+        "Converting image".to_string(),
+        "Saving Image".to_string(),
+    ]);
+
+    steps.next().unwrap();
     let palette = get_palette(cli.palette)?;
 
+    steps.next().unwrap();
     let mut img = open_image(&cli.input)?;
 
-    let algorithm = &cli.algorithm;
-
-    map_image_to_palette(&mut img, &palette, algorithm);
+    steps.next().unwrap();
+    map_image_to_palette(&mut img, &palette, &cli.algorithm);
 
     let mut output_path = cli.output;
 
+    steps.next().unwrap();
     #[allow(clippy::literal_string_with_formatting_args, reason = "False positive")]
     if output_path.extension().is_some_and(|ext| ext == "{ext}") {
         if let Some(input_ext) = cli.input.extension() {
@@ -70,6 +92,9 @@ fn main() -> Result<()> {
 
     img.save(output_path)
         .map_err(|_| anyhow!("unsupported output format"))?;
+
+    // We are at the end of the cli, there should be no more steps left
+    assert!(steps.next().is_none());
 
     Ok(())
 }
