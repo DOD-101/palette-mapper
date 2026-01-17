@@ -30,7 +30,7 @@ Palette Mapper is split into 3 different things:
 
 - [ ] Implement more distance algorithms
 
-    - [ ] CIE Hybrid
+    - [x] CIE Hybrid
 
     - [ ] CIEDE2000
 

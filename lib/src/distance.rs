@@ -27,7 +27,7 @@ use std::marker::PhantomData;
 
 use image::Rgba;
 
-use crate::conversions::RgbConversionExt;
+use crate::conversions::{Lab, RgbConversionExt};
 
 /// Trait representing an algorithm used to calculate the distance between two colors
 ///
@@ -120,6 +120,10 @@ palette_mapper_macros::algorithms! {
     /// It is in essence the [`EuclideanDistance`] in CIELAB coordinates.
     #[NoAlpha]
     CIE76
+
+    /// A combination of [`EuclideanDistance`] and [`ManhattanDistance`] in die CIELAB color space
+    #[NoAlpha]
+    CIEHybrid
 }
 
 impl DistanceAlgorithm for EuclideanDistance {
@@ -158,13 +162,39 @@ impl DistanceAlgorithm for CIE76 {
         reason = "The cast should cause no issues here. If it does there is a bug further up."
     )]
     fn distance(&self, left: &Rgba<u8>, right: &Rgba<u8>) -> u32 {
-        let left = crate::conversions::Lab::from(left.to_rgb()).0;
-        let right = crate::conversions::Lab::from(right.to_rgb()).0;
+        let left = Lab::from(left.to_rgb()).0;
+        let right = Lab::from(right.to_rgb()).0;
 
         let val = (left[2] - right[2]).mul_add(
             left[2] - right[2],
             (left[1] - right[1]).mul_add(left[1] - right[1], (left[0] - right[0]).powi(2)),
         ) * 100_000.0;
+
+        val as u32
+    }
+}
+
+impl DistanceAlgorithm for CIEHybrid {
+    #[allow(
+        clippy::cast_sign_loss,
+        clippy::cast_possible_truncation,
+        reason = "The cast should cause no issues here. If it does there is a bug further up."
+    )]
+    fn distance(&self, left: &Rgba<u8>, right: &Rgba<u8>) -> u32 {
+        let left = Lab::from(left.to_rgb()).0;
+        let right = Lab::from(right.to_rgb()).0;
+
+        let val = (left[2] - right[2])
+            .mul_add(
+                left[2] - right[2],
+                (left[1] - right[1]).mul_add(left[1] - right[1], (left[0] - right[0]).powi(2)),
+            )
+            .mul_add(
+                100_000.0,
+                (left[0] - right[0]).abs()
+                    + (left[1] - right[1]).abs()
+                    + (left[2] - right[2]).abs(),
+            );
 
         val as u32
     }
