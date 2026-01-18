@@ -1,0 +1,27 @@
+body {
+  background-color: #242335;
+  color: white;
+}
+
+#inputs {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  width: fit-content;
+
+  .row {
+    padding: 5px 0;
+
+    label:after {
+      content: ":";
+    }
+    label {
+      display: inline-block;
+      width: 10rem;
+    }
+  }
+}
+
+#img_preview {
+  max-width: 90vw;
+}

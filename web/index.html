@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Palette Mapper Web UI</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <form id="inputs">
+      <label for="algorithm">Algorithm</label>
+      <select name="algorithm" id="algorithms" required></select>
+
+      <div class="row">
+        <label for="palette">Palette file (.json)</label>
+        <input type="file" id="pal_upload" name="palette" required />
+      </div>
+
+      <div class="row">
+        <label for="image">Image file</label>
+        <input type="file" id="img_upload" name="image" required />
+      </div>
+
+      <input type="submit" value="Map Image!" />
+    </form>
+    <img alt="" id="img_preview" />
+    <!-- TODO: Add error display for users -->
+    <script type="module" src="index.js"></script>
+  </body>
+</html>
