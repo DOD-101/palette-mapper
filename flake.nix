@@ -33,7 +33,12 @@
 
         # inherit (pkgs) lib;
 
-        toolchain = fenix.packages.${system}.stable.toolchain;
+        toolchain =
+          with fenix.packages.${system};
+          combine [
+            stable.toolchain
+            targets.wasm32-unknown-unknown.stable.rust-std
+          ];
 
         nearsk' = pkgs.callPackage nearsk {
           cargo = toolchain;
@@ -56,6 +61,11 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               toolchain
+
+              hyperfine
+
+              wasm
+              wasm-pack
 
               # benchmarking and testing
               cargo-criterion

@@ -1,5 +1,5 @@
 [workspace]
-members = ["cli", "lib", "macros"]
+members = ["cli", "lib", "macros", "web"]
 resolver = "3"
 
 [workspace.package]

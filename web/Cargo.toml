@@ -1,0 +1,16 @@
+[package]
+edition.workspace = true
+name = "palette-mapper-web"
+version.workspace = true
+
+[dependencies]
+image = { workspace = true, features = ["default-formats", "rayon"] }
+palette-mapper-lib = { workspace = true, features = ["default", "strum"] }
+strum.workspace = true
+wasm-bindgen = "0.2.108"
+
+[lints]
+workspace = true
+
+[lib]
+crate-type = ["cdylib"]
