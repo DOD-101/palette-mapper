@@ -16,6 +16,7 @@ rayon.version = "1.11.0"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
 strum = { version = "0.27", features = ["derive"] }
+wasm-bindgen = "0.2.108"
 
 # dev
 criterion = "0.8.1"

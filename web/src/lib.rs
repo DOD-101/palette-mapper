@@ -3,11 +3,14 @@ use std::io::Cursor;
 use std::str::FromStr;
 use std::sync::LazyLock;
 
-use image::ImageReader;
+use image::{ImageReader, Rgba};
 use palette_mapper::distance::Algorithms;
 use palette_mapper::{Palette, color_pallete, map_image_to_palette};
 use strum::VariantNames;
+
 use wasm_bindgen::prelude::*;
+
+use serde::Deserialize;
 
 #[wasm_bindgen]
 pub fn algorithms() -> Vec<String> {
@@ -24,6 +27,7 @@ pub enum MapErr {
     ConversionFailed,
     FormatNotUnderstood,
     FailedToEncode,
+    InvalidRgbaValue,
 }
 
 static TESTING_PALLETE: LazyLock<Palette> = LazyLock::new(|| {
@@ -58,7 +62,9 @@ static TESTING_PALLETE: LazyLock<Palette> = LazyLock::new(|| {
 });
 
 #[wasm_bindgen]
-pub fn map_image(img: Vec<u8>, algorithm: String) -> Result<Vec<u8>, MapErr> {
+pub fn map_image(img: Vec<u8>, palette: JsValue, algorithm: String) -> Result<Vec<u8>, MapErr> {
+    let pal = palette.into_serde();
+
     let mut output = Cursor::new(Vec::with_capacity(img.len()));
 
     let reader = ImageReader::new(Cursor::new(img))
@@ -69,9 +75,19 @@ pub fn map_image(img: Vec<u8>, algorithm: String) -> Result<Vec<u8>, MapErr> {
 
     let mut buf = reader.decode().map_err(|_| MapErr::InavlidImg)?;
 
+    let mut pal = Palette::default();
+
+    for cols in palette {
+        if cols.len() != 4 {
+            return Err(MapErr::InvalidRgbaValue);
+        }
+
+        pal.add_color(Rgba::from([cols[0], cols[1], cols[2], cols[3]]));
+    }
+
     map_image_to_palette(
         &mut buf,
-        &TESTING_PALLETE,
+        &pal,
         &Algorithms::from_str(&algorithm).map_err(|_| MapErr::InvalidAlgorithm)?,
     );
 

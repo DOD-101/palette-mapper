@@ -897,6 +897,7 @@ dependencies = [
  "serde_json",
  "strum",
  "thiserror",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -915,6 +916,7 @@ version = "0.1.0"
 dependencies = [
  "image",
  "palette-mapper-lib",
+ "serde",
  "strum",
  "wasm-bindgen",
 ]

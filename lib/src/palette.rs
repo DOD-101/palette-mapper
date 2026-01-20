@@ -90,6 +90,11 @@ macro_rules! rgba {
 pub struct Palette(Vec<Rgba<u8>>);
 
 impl Palette {
+    /// Add a color to the pallete
+    pub fn add_color(&mut self, col: Rgba<u8>) {
+        self.0.push(col);
+    }
+
     /// Returns an iterator over the slice.
     ///     
     /// The iterator yields all colors int the pallete from start to end.

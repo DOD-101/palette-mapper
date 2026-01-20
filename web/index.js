@@ -1,4 +1,8 @@
-import init, { algorithms, map_image } from "./pkg/palette_mapper_web.js";
+import init, {
+	algorithms,
+	map_image,
+	Palette,
+} from "./pkg/palette_mapper_web.js";
 
 await init();
 
@@ -30,7 +34,12 @@ img_upload.addEventListener("change", (e) => {
 
 		const raw_bytes = new Uint8Array(bytes);
 
-		const converted = map_image(raw_bytes, algorithms_select.value);
+		let pal = [
+			[255, 255, 255, 255],
+			[0, 0, 0, 0],
+		];
+
+		const converted = map_image(raw_bytes, pal, algorithms_select.value);
 		console.log(converted);
 
 		// const base64 = converted.toBase64({ alphabet: "base64url" });
