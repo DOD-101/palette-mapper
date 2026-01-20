@@ -16,23 +16,29 @@ Palette Mapper is split into 3 different things:
 
 <!-- TODO: See below -->
 
-- [ ] Add testing to `lib` and `cli`
+- [ ] Add testing 
+
+    - [ ] CI
 
     - [ ] Benchmarking with hyperfine for `cli`
+
+    - [ ] e2e testing for `web`
 
     - [x] Benchmarking with criterion for `lib`
 
     - [x] Snapshot testing for `lib`
 
-- [ ] Create `web`
+- [x] Create `web`
+
+- [ ] Improve `web` and `cli` (UI / features)
 
 - [ ] Add pre-defined palletes 
 
 - [ ] Implement more distance algorithms
 
-    - [x] CIE Hybrid
-
     - [ ] CIEDE2000
+
+    - [x] CIE Hybrid
 
     - [x] CIE76 LAB
 
