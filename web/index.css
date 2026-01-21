@@ -1,27 +1,170 @@
+@import url("https://fonts.googleapis.com/css?family=Asap:700|Asap:400");
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --text: #0e0b1e;
+    --text-alt: #e5e2f4;
+    --background: #e1e0ff;
+    --primary: #30296b;
+    --secondary: #d284a2;
+    --accent: #b95b46;
+
+    --confirm: 22, 128, 57;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #e5e2f4;
+    --text-alt: var(--text);
+    --background: #06050e;
+    --primary: #9b93d6;
+    --secondary: #7b2e4c;
+    --accent: #b95c47;
+
+    --confirm: 22, 128, 57;
+  }
+}
+
 body {
-  background-color: #242335;
+  font-family: "Asap";
+  font-weight: 400;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: "Asap";
+  font-weight: 700;
+}
+
+html {
+  font-size: 100%;
+} /* 16px */
+
+h1 {
+  font-size: 4.21rem; /* 67.36px */
+}
+
+h2 {
+  font-size: 3.158rem; /* 50.56px */
+}
+
+h3 {
+  font-size: 2.369rem; /* 37.92px */
+}
+
+h4 {
+  font-size: 1.777rem; /* 28.48px */
+}
+
+h5 {
+  font-size: 1.333rem; /* 21.28px */
+}
+
+small {
+  font-size: 0.75rem; /* 12px */
+}
+
+body {
+  background-color: var(--background);
   color: white;
+}
+
+main {
+  display: flex;
+  flex-direction: row;
+}
+
+.sidebar {
+  display: flex;
+  width: fit-content;
+  height: 100vh;
+  align-items: center;
 }
 
 #inputs {
   display: flex;
   flex-direction: column;
   padding: 5px;
-  width: fit-content;
+  width: 12vw;
+
+  max-width: 200px;
+  color: var(--text);
+
+  border: 3px solid var();
+  border-radius: 8px;
+
+  padding: 1rem;
+
+  input,
+  label {
+    width: 100%;
+  }
+
+  input[type="submit"] {
+    background-color: var(--primary);
+    font-weight: bold;
+    color: var(--text-alt);
+    cursor: pinter;
+
+    border: none;
+    border-radius: 3px;
+    margin: 0.5rem;
+
+    transition: all 200ms ease-in-out;
+    &:hover {
+      background-color: rgb(var(--confirm));
+      box-shadow: 5px 20px 50px 5px rgba(var(--confirm), 0.5);
+      scale: 1.02;
+    }
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  select {
+    background-color: var(--secondary);
+    color: inherit;
+    border: none;
+    border-radius: 3px;
+    margin: 0.5rem;
+  }
 
   .row {
     padding: 5px 0;
 
-    label:after {
-      content: ":";
-    }
     label {
       display: inline-block;
-      width: 10rem;
+      color: var(--text);
+      text-align: center;
+      background-color: var(--secondary);
+      cursor: pointer;
+      border-radius: 3px;
+      padding: 0.1rem 0;
+      margin: 0.25rem 0.5rem;
+
+      transition: all 200ms ease-in-out;
+      &:hover {
+        background-color: var(--accent);
+        scale: 1.02;
+      }
     }
   }
 }
-
-#img_preview {
-  max-width: 90vw;
+#img_container {
+  display: block;
+  position: relative;
+  #img_preview {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    max-width: 85vw;
+    max-height: 95vh;
+    width: auto;
+    height: auto;
+  }
 }

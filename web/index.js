@@ -71,9 +71,11 @@ function read_palette(file) {
  * */
 function read_image(file) {
 	return new Promise((resolve, reject) => {
+		console.log(file);
 		const image_reader = new FileReader();
 
 		image_reader.onload = (reader_ev) => {
+			console.log(reader_ev);
 			const bytes = new Uint8Array(reader_ev.target.result);
 
 			resolve(bytes);
@@ -139,3 +141,31 @@ form.addEventListener("submit", (ev) => {
 		image,
 	);
 });
+
+// style related
+//
+
+function updateLabelForFileInput(inputElement, labelElement, defaultText) {
+	if (inputElement && inputElement.files && inputElement.files.length > 0) {
+		labelElement.textContent = inputElement.files[0].name;
+	} else {
+		labelElement.textContent = defaultText;
+	}
+}
+
+const pal_label = document.getElementById("pal_upload_label"),
+	img_label = document.getElementById("img_upload_label");
+
+const pal_input = document.getElementById("pal_upload"),
+	img_input = document.getElementById("img_upload");
+
+pal_input.addEventListener("change", (_) => {
+	updateLabelForFileInput(pal_input, pal_label, "Palette");
+});
+
+img_input.addEventListener("change", (_) => {
+	updateLabelForFileInput(img_input, img_label, "Image");
+});
+
+updateLabelForFileInput(pal_input, pal_label, "Palette");
+updateLabelForFileInput(img_input, img_label, "Image");
