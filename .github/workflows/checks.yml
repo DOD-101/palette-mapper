@@ -24,8 +24,4 @@ jobs:
       run: cargo clippy --verbose
     - name: Run tests
       run: cargo test --verbose
-    - name: Run bench (minimal)
-      run: |
-        cargo install cargo-criterion
-        cargo criterion "500x500"
 
