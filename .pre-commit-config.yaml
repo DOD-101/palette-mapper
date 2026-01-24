@@ -14,8 +14,33 @@ repos:
       - id: typos
   - repo: local
     hooks:
+      - id: build
+        name: Cargo Build
+        description: "Build the Rust project to ensure it compiles."
+        entry: cargo build --verbose
+        language: system
+        pass_filenames: false
       - id: rustfmt
-        name: rustfmt
+        name: Check Rust formatting with rustfmt
+        description: "Ensure that code adheres to the rustfmt style guidelines."
         entry: cargo fmt --all -- --check --color always
+        language: system
+        pass_filenames: false
+      - id: check
+        name: Cargo Check
+        description: "Run a fast, non-invasive check on your Rust code."
+        entry: cargo check --verbose
+        language: system
+        pass_filenames: false
+      - id: clippy
+        name: Cargo Clippy
+        description: "Run Clippy for linting the Rust project."
+        entry: cargo clippy --verbose
+        language: system
+        pass_filenames: false
+      - id: test
+        name: Cargo Test
+        description: "Run tests on the Rust codebase."
+        entry: cargo test --verbose
         language: system
         pass_filenames: false
