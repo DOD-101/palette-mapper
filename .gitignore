@@ -2,3 +2,4 @@
 .direnv
 /web/pkg/
 /web/target/
+.build
