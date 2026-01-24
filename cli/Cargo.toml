@@ -5,15 +5,17 @@ name = "palette-mapper-cli"
 version.workspace = true
 
 [dependencies]
-anstyle = "1.0.13"
-anyhow = "1.0.100"
-clap.workspace = true
-image = { workspace = true, features = ["default", "serde"] }
 palette-mapper-lib = { workspace = true, features = [
   "default",
   "serde",
   "strum",
 ] }
+palette-mapper-palettes = { workspace = true, features = ["strum"] }
+
+anstyle = "1.0.13"
+anyhow = "1.0.100"
+clap.workspace = true
+image = { workspace = true, features = ["default", "serde"] }
 serde_json.workspace = true
 strum.workspace = true
 

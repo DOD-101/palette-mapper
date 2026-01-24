@@ -6,6 +6,10 @@ version.workspace = true
 [dependencies]
 image = { workspace = true }
 palette-mapper-lib = { workspace = true }
+strum = { workspace = true, optional = true }
+
+[features]
+strum = ["dep:strum"]
 
 [lints]
 workspace = true

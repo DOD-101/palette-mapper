@@ -9,6 +9,7 @@ version = "0.1.0"
 [workspace.dependencies]
 palette-mapper-lib = { version = "*", path = "./lib", default-features = false }
 palette-mapper-macros = { version = "*", path = "./macros" }
+palette-mapper-palettes = { version = "*", path = "./palettes" }
 
 clap = { version = "4.5.54", features = ["derive", "string"] }
 image = { version = "0.25.9", default-features = false }

@@ -926,6 +926,7 @@ dependencies = [
  "clap",
  "image",
  "palette-mapper-lib",
+ "palette-mapper-palettes",
  "serde_json",
  "strum",
 ]
@@ -966,6 +967,7 @@ dependencies = [
  "image",
  "palette-mapper-lib",
  "serde_json",
+ "strum",
 ]
 
 [[package]]

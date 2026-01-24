@@ -17,6 +17,7 @@ use clap::{
     builder::{PossibleValuesParser, TypedValueParser},
 };
 use image::DynamicImage;
+use palette_mapper_palettes::{Base16, Base24};
 use std::{
     fs::File,
     io::BufReader,
@@ -35,14 +36,28 @@ use step::StepBuilder;
 struct Cli {
     /// Path to input image
     input: PathBuf,
-    /// Path to file containing palette
-    // TODO: Allow passing values by stdin
-    palette: PathBuf,
     /// Distance Algorithm used to determine distance between colors
     #[arg(long, short, value_enum,
         value_parser = PossibleValuesParser::new(<Algorithms as strum::VariantNames>::VARIANTS).map(|s| s.parse::<Algorithms>().unwrap()),
-        default_value = "EuclideanDistance")]
+        default_value = Algorithms::EuclideanDistance.to_string())]
     algorithm: Algorithms,
+    /// Path to file containing palette
+    #[arg(short, long, group = "palette_source", required = true)]
+    palette: Option<PathBuf>,
+    #[arg(long, value_enum,
+        value_parser = PossibleValuesParser::new(<Base16 as strum::VariantNames>::VARIANTS).map(|s| s.parse::<Base16>().unwrap()),
+        group = "palette_source",
+        required = true
+    )]
+    /// Use a base16 theme
+    base16: Option<Base16>,
+    #[arg(long, value_enum,
+        value_parser = PossibleValuesParser::new(<Base24 as strum::VariantNames>::VARIANTS).map(|s| s.parse::<Base24>().unwrap()),
+        group = "palette_source",
+        required = true
+    )]
+    /// Use a base24 theme
+    base24: Option<Base24>,
     /// Output path
     ///
     /// Having the path end with ".{ext}" will replace the extension with that of the input file.
@@ -53,6 +68,25 @@ struct Cli {
     /// Disabling this can be useful in scripting context where pretty output is not needed.
     #[arg(long)]
     non_interactive: bool,
+}
+
+impl Cli {
+    /// Get the palette passed by the user independent of how it was passed
+    fn get_palette(&self) -> Result<Palette> {
+        if let Some(pal) = self.base16.map(std::convert::Into::into) {
+            return Ok(pal);
+        }
+
+        if let Some(pal) = self.base24.map(std::convert::Into::into) {
+            return Ok(pal);
+        }
+
+        if let Some(ref pal) = self.palette {
+            return read_palette(pal);
+        }
+
+        unreachable!("A source for the palette should always be given.")
+    }
 }
 
 fn main() -> Result<()> {
@@ -70,7 +104,7 @@ fn main() -> Result<()> {
     ]);
 
     steps.next().unwrap();
-    let palette = get_palette(cli.palette)?;
+    let palette = cli.get_palette()?;
 
     steps.next().unwrap();
     let mut img = open_image(&cli.input)?;
@@ -102,7 +136,7 @@ fn main() -> Result<()> {
 /// Attempt to read the provided path and deserialize the contents to a [`Palette`]
 ///
 /// Currently only supports json.
-fn get_palette(palette: PathBuf) -> Result<Palette> {
+fn read_palette(palette: &PathBuf) -> Result<Palette> {
     let format = palette.extension().map_or_else(
         || {
             eprintln!("No extension on palette path. Assuming line-wise.");

@@ -3,6 +3,8 @@ use palette_mapper::{color_palette, Palette};
 {% macro base(base, themes) %}
     /// Base{{base}} themes
     #[allow(missing_docs)]
+    #[cfg_attr(feature = "strum", derive(strum::EnumString, strum::Display, strum::EnumIter, strum::EnumCount, strum::VariantArray, strum::VariantNames))]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     pub enum Base{{base}} {
         {% for theme in themes -%}
             {{ theme.name | enum_name }},
