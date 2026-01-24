@@ -21,7 +21,7 @@ convert() {
         base_name=$(basename "$file")
         name="${base_name%.yaml}"
 
-        contents="$(grep "base..:" "$file" | sed 's/[ \t]*base..:[ \t]*\(.*\)"[ \t]*#*.*/\1"/' | jq -n '[inputs]')"
+        contents="$(grep "base..:" "$file" | sed 's/[ \t]*base..:[ \t]*\(.*\)"[ \t]*#*.*/\1"/' | jq -n -c '[inputs]')"
 
         echo "$contents" >"./palettes/$1/${name}.json"
     done

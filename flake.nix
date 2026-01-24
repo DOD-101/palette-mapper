@@ -67,6 +67,7 @@
 
               wasm
               wasm-pack
+              jq
 
               # benchmarking and testing
               cargo-criterion
