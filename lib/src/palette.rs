@@ -4,14 +4,7 @@
 use image::Rgba;
 
 #[cfg(feature = "serde")]
-use {
-    serde::{
-        Serialize,
-        de::{self, Deserialize, Deserializer, SeqAccess, Visitor},
-        ser::SerializeSeq,
-    },
-    std::fmt,
-};
+mod serde;
 
 /// Helper macro for creating a [`Palette`]
 ///
@@ -38,7 +31,7 @@ use {
 /// ```
 #[macro_export]
 macro_rules! color_pallete {
-    ($([$red:expr, $green:expr, $blue:expr $(, $alpha:tt)?]),+) => {
+    ($([$red:expr, $green:expr, $blue:expr $(, $alpha:tt)? $(,)?] $(,)?),+) => {
         $crate::palette::Palette::from(
                                 vec![
                                     $(
@@ -144,66 +137,6 @@ impl From<Vec<Rgba<u8>>> for Palette {
     }
 }
 
-#[cfg(feature = "serde")]
-impl Serialize for Palette {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let mut seq = serializer.serialize_seq(Some(self.len()))?;
-
-        for e in self {
-            seq.serialize_element(&e.0)?;
-        }
-
-        seq.end()
-    }
-}
-
-#[cfg(feature = "serde")]
-impl<'de> Deserialize<'de> for Palette {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        struct PaletteVisitor;
-
-        impl<'de> Visitor<'de> for PaletteVisitor {
-            type Value = Palette;
-
-            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                formatter.write_str("a sequence of RGB ([u8; 3]) or RGBA ([u8; 4]) color arrays")
-            }
-
-            fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
-            where
-                A: SeqAccess<'de>,
-            {
-                let mut colors = Vec::with_capacity(seq.size_hint().unwrap_or(0));
-
-                while let Some(raw) = seq.next_element::<Vec<u8>>()? {
-                    let rgba = match *raw.as_slice() {
-                        [r, g, b] => Rgba::from([r, g, b, 255]),
-                        [r, g, b, a] => Rgba::from([r, g, b, a]),
-                        _ => {
-                            return Err(de::Error::invalid_length(
-                                raw.len(),
-                                &"expected an array of length 3 (RGB) or 4 (RGBA)",
-                            ));
-                        }
-                    };
-
-                    colors.push(rgba);
-                }
-
-                Ok(Palette::from(colors))
-            }
-        }
-
-        deserializer.deserialize_seq(PaletteVisitor)
-    }
-}
-
 /// Immutable [Palette] iterator
 ///
 /// ## Note on implementation
@@ -237,18 +170,5 @@ impl Iterator for IntoIter {
     type Item = Rgba<u8>;
     fn next(&mut self) -> Option<Self::Item> {
         self.this.next()
-    }
-}
-
-#[cfg(test)]
-mod test {
-    #[test]
-    #[cfg(feature = "serde")]
-    fn serde_roundtrip() {
-        let p = color_pallete!([12, 45, 67, 200], [87, 212, 45]);
-
-        let v = serde_json::to_value(&p).unwrap();
-
-        assert_eq!(p, serde_json::from_value(v).unwrap());
     }
 }
