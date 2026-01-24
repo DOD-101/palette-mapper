@@ -12,8 +12,8 @@ mod serde;
 ///
 ///
 /// ```
-/// # use palette_mapper::color_pallete;
-/// let p = color_pallete!(
+/// # use palette_mapper::color_palette;
+/// let p = color_palette!(
 ///     [34, 63, 24],
 ///     [4, 3, 12, 50], // with alpha value
 ///     [20, 100, 203]
@@ -30,7 +30,7 @@ mod serde;
 ///
 /// ```
 #[macro_export]
-macro_rules! color_pallete {
+macro_rules! color_palette {
     ($([$red:expr, $green:expr, $blue:expr $(, $alpha:tt)? $(,)?] $(,)?),+) => {
         $crate::palette::Palette::from(
                                 vec![
@@ -66,7 +66,7 @@ macro_rules! rgba {
 
 /// A color palette
 ///
-/// A color pallete is just a (curated) collection of colors usually designed to look nice
+/// A color palette is just a (curated) collection of colors usually designed to look nice
 /// together.
 ///
 /// ## Note on implementation
@@ -78,19 +78,19 @@ macro_rules! rgba {
 ///
 /// ### **See also**
 ///
-/// - [`color_pallete`]
+/// - [`color_palette`]
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Palette(Vec<Rgba<u8>>);
 
 impl Palette {
-    /// Add a color to the pallete
+    /// Add a color to the palette
     pub fn add_color(&mut self, col: Rgba<u8>) {
         self.0.push(col);
     }
 
     /// Returns an iterator over the slice.
-    ///     
-    /// The iterator yields all colors int the pallete from start to end.
+    ///
+    /// The iterator yields all colors int the palette from start to end.
     #[must_use]
     pub fn iter(&self) -> Iter<'_> {
         Iter {

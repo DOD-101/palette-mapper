@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 
-# Script to pull in palettes from tinted-themeing
+# Script to pull in palettes from tinted-theming
 
 set -e
 

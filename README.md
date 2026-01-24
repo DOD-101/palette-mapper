@@ -1,22 +1,22 @@
 # Palette Mapper 🎨
 
-> Make any image fit your color scheme 
+> Make any image fit your color scheme
 
 ## What is this?
 
-Palette Mapper is split into 3 different things: 
+Palette Mapper is split into 3 different things:
 
-- The core library (located at `lib/`). This holds the implementation for taking a color palette and mapping it onto an image. 
+- The core library (located at `lib/`). This holds the implementation for taking a color palette and mapping it onto an image.
 
 - An accompanying CLI (located at `cli/`). This allows you to interact with the library from your terminal.
 
-- The website (located at `web/`). This enables you to use the library from the comfort of your browser. 
+- The website (located at `web/`). This enables you to use the library from the comfort of your browser.
 
 ## 🚧 TODO 🚧
 
 <!-- TODO: See below -->
 
-- [ ] Add testing 
+- [ ] Add testing
 
     - [ ] CI
 
@@ -32,7 +32,7 @@ Palette Mapper is split into 3 different things:
 
 - [ ] Improve `web` and `cli` (UI / features)
 
-- [ ] Add pre-defined palletes 
+- [x] Add pre-defined palettes
 
 - [ ] Implement more distance algorithms
 
@@ -54,7 +54,7 @@ Palette Mapper is split into 3 different things:
 
     - [ ] Batch processing
 
-    - [ ] Lightening 
+    - [ ] Lightening
 
 ## 🖼️ Examples 🖼️
 
@@ -71,4 +71,3 @@ Palette Mapper is split into 3 different things:
 The palettes found in `./palettes/base16/` and `./palettes/base24/` are derived (using `./fetch-palettes.sh`) from [Tinted Theming](https://github.com/tinted-theming/schemes) and are licensed under `MIT`.
 
 This project is dual licensed under `MIT` and `Apache-2.0`
-

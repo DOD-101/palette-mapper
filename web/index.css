@@ -107,7 +107,7 @@ main {
     background-color: var(--primary);
     font-weight: bold;
     color: var(--text-alt);
-    cursor: pinter;
+    cursor: pointer;
 
     border: none;
     border-radius: 3px;

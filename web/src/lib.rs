@@ -18,7 +18,7 @@ pub fn algorithms() -> Vec<String> {
         .collect()
 }
 
-/// Errors encountered when attempting to map an image to a color pallete
+/// Errors encountered when attempting to map an image to a color palette
 ///
 /// These are all errors specific to [`map_image`], since it is responsible for interfacing with
 /// the web frontend. Any errors are to be treated as bugs. We could just panic, but this gives us
@@ -28,7 +28,7 @@ pub enum MapErr {
     /// The passed algorithm [`&str`] cannot be converted into an algorithm
     InvalidAlgorithm,
     /// The passed bytes cannot be interpreted as an image
-    InavlidImg,
+    InvalidImg,
     /// The format of the image could not be determined
     FormatNotUnderstood,
     /// Failed to (re-)encode the image after conversion and write it to the output buffer
@@ -63,7 +63,7 @@ pub fn map_image(img: Vec<u8>, palette: &[u8], algorithm: &str) -> Result<Vec<u8
         .format()
         .expect("Since we called with guessed format the format must be known");
 
-    let mut buf = reader.decode().map_err(|_| MapErr::InavlidImg)?;
+    let mut buf = reader.decode().map_err(|_| MapErr::InvalidImg)?;
 
     let mut pal = Palette::default();
 

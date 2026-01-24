@@ -108,7 +108,7 @@ impl<'de> Deserialize<'de> for Palette {
 #[cfg(test)]
 mod test {
     use super::parse_hex_color;
-    use crate::color_pallete;
+    use crate::color_palette;
 
     #[test]
     fn parse_hex_colors() {
@@ -118,7 +118,7 @@ mod test {
 
     #[test]
     fn palette_serde_roundtrip() {
-        let p = color_pallete!([12, 45, 67, 200], [87, 212, 45]);
+        let p = color_palette!([12, 45, 67, 200], [87, 212, 45]);
 
         let v = serde_json::to_value(&p).unwrap();
 
@@ -127,7 +127,7 @@ mod test {
 
     #[test]
     fn palette_serialize() {
-        let p = color_pallete!([12, 45, 67, 200], [87, 212, 45]);
+        let p = color_palette!([12, 45, 67, 200], [87, 212, 45]);
 
         let v = serde_json::to_string(&p);
 

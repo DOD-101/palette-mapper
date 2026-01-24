@@ -1,7 +1,7 @@
-use palette_mapper::{color_pallete, Palette};
+use palette_mapper::{color_palette, Palette};
 
 {% macro base(base, themes) %}
-    /// Base{{base}} themes 
+    /// Base{{base}} themes
     #[allow(missing_docs)]
     pub enum Base{{base}} {
         {% for theme in themes -%}
@@ -14,9 +14,9 @@ use palette_mapper::{color_pallete, Palette};
         fn from(value: Base{{base}}) -> Self {
             match value {
                 {% for theme in themes -%}
-                    Base{{base}}::{{ theme.name | enum_name }} => color_pallete!(
+                    Base{{base}}::{{ theme.name | enum_name }} => color_palette!(
                     {%- for rgba in theme.palette -%}
-                    [ 
+                    [
                         {%- for component in rgba.0 -%}
                             {{ component }},
                         {%- endfor -%}

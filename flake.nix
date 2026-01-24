@@ -63,6 +63,7 @@
               toolchain
 
               hyperfine
+              prek
 
               wasm
               wasm-pack
@@ -74,6 +75,10 @@
               # tools i like using
               watchexec
             ];
+
+            shellHook = ''
+              prek install
+            '';
           };
         };
       }

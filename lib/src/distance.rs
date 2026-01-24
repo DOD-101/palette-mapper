@@ -35,7 +35,7 @@ use crate::conversions::{Lab, RgbConversionExt};
 ///
 /// When implementing this trait it is not relevant what the concrete values returned by
 /// [`DistanceAlgorithm::distance`] are. They are never exposed to the user directly. They must
-/// merely be a consistent measurement of how close two colors are to one another.  
+/// merely be a consistent measurement of how close two colors are to one another.
 ///
 /// This means one Algorithm may return values in the range `0-100` while another uses the entire
 /// range of [`u32`] values. As long as the values returned allow for comparing how close (or

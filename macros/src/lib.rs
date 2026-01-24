@@ -1,4 +1,4 @@
-//! proc macros for pallete-mapper-* crates
+//! proc macros for palette-mapper-* crates
 //!
 //! These macros are for internal use and not for end-consumers of the library or other components.
 use std::fs::read_dir;
@@ -184,7 +184,7 @@ pub fn algorithms(input: TokenStream) -> TokenStream {
         #[cfg(test)]
         mod test {
             use crate::{
-                Palette, color_pallete,
+                Palette, color_palette,
                 map_image_to_palette,
                 distance::*, // to get all algorithms
                 rgba,
@@ -193,8 +193,8 @@ pub fn algorithms(input: TokenStream) -> TokenStream {
             use std::sync::LazyLock;
             use std::{io::Cursor, path::Path};
 
-            static TESTING_PALLETE: LazyLock<Palette> = LazyLock::new(|| {
-                color_pallete!(
+            static TESTING_PALETTE: LazyLock<Palette> = LazyLock::new(|| {
+                color_palette!(
                     [255, 0, 0, 255],     // Red
                     [255, 128, 0, 255],   // Orange
                     [255, 255, 0, 255],   // Yellow
@@ -331,7 +331,7 @@ fn algorithm_tests(algorithm: &Algorithm, token_stream: &mut proc_macro2::TokenS
 
                     let mut img = img.decode().expect("Failed to decode");
 
-                    map_image_to_palette(&mut img, &TESTING_PALLETE, &#algorithm::default());
+                    map_image_to_palette(&mut img, &TESTING_PALETTE, &#algorithm::default());
                     let mut buf = Vec::new();
 
                     let encoder = image::codecs::png::PngEncoder::new(&mut buf);

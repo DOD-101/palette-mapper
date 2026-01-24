@@ -1,4 +1,4 @@
-//! Library to convert (map) an image to color pallete
+//! Library to convert (map) an image to color palette
 mod conversions;
 pub mod distance;
 pub mod palette;
@@ -16,11 +16,11 @@ pub use {distance::Distance, palette::Palette};
 #[cfg(feature = "rayon")]
 use rayon::prelude::*;
 
-/// Take a color and find the closest color to it in a pallete
+/// Take a color and find the closest color to it in a palette
 ///
 /// [`Rgba`]: image::Rgba
 #[must_use]
-pub fn closest_color_in_pallete<'b, D: distance::DistanceAlgorithm>(
+pub fn closest_color_in_palette<'b, D: distance::DistanceAlgorithm>(
     color: &Rgba<u8>,
     palette: &'b palette::Palette,
     algorithm: &D,
@@ -41,7 +41,7 @@ pub fn closest_color_in_pallete<'b, D: distance::DistanceAlgorithm>(
     col
 }
 
-/// Take an image and convert it to a color pallete  
+/// Take an image and convert it to a color palette
 ///
 /// ## Panics
 ///
@@ -71,7 +71,7 @@ fn map_image_to_palette_inner<D: distance::DistanceAlgorithm>(
     for x in 0..width {
         for y in 0..height {
             let px = img.get_pixel(x, y);
-            let col = closest_color_in_pallete(&px, palette, algorithm);
+            let col = closest_color_in_palette(&px, palette, algorithm);
 
             img.put_pixel(x, y, *col.unwrap());
         }
@@ -95,7 +95,7 @@ fn map_image_to_palette_inner<D: distance::DistanceAlgorithm + Sync>(
                 let px = px.2;
 
                 let pixel = image::Rgba([px[0], px[1], px[2], 255]);
-                let col = closest_color_in_pallete(&pixel, palette, algorithm).unwrap();
+                let col = closest_color_in_palette(&pixel, palette, algorithm).unwrap();
                 *px = [col[0], col[1], col[2]].into();
             });
         }
@@ -105,7 +105,7 @@ fn map_image_to_palette_inner<D: distance::DistanceAlgorithm + Sync>(
                 let px = px.2;
 
                 let pixel = image::Rgba([px[0], px[1], px[2], px[3]]);
-                let col = closest_color_in_pallete(&pixel, palette, algorithm).unwrap();
+                let col = closest_color_in_palette(&pixel, palette, algorithm).unwrap();
                 *px = *col;
             });
         }

@@ -14,7 +14,7 @@ pub static INTERACTIVE: OnceLock<bool> = OnceLock::new();
 
 /// A builder to conveniently create multiple [`Step`]s
 ///
-/// This type implements [`Iterator`]. To procede to the next step call next.
+/// This type implements [`Iterator`]. To proceed to the next step call next.
 pub struct StepBuilder {
     /// The current step
     current_num: u8,

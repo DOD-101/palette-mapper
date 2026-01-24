@@ -5,7 +5,7 @@
 use criterion::{BenchmarkId, Criterion, criterion_group, criterion_main};
 use image::{DynamicImage, ImageBuffer, Rgba};
 use palette_mapper::{
-    Palette, color_pallete,
+    Palette, color_palette,
     distance::{Algorithms, EuclideanDistance},
     map_image_to_palette,
 };
@@ -13,8 +13,8 @@ use rayon::iter::ParallelIterator;
 use std::{hint::black_box, sync::LazyLock, time::Duration};
 use strum::VariantArray;
 
-static TESTING_PALLETE: LazyLock<Palette> = LazyLock::new(|| {
-    color_pallete!(
+static TESTING_PALETTE: LazyLock<Palette> = LazyLock::new(|| {
+    color_palette!(
         [255, 0, 0, 255],     // Red
         [255, 128, 0, 255],   // Orange
         [255, 255, 0, 255],   // Yellow
@@ -43,7 +43,7 @@ fn img_buf_noise(size: (u32, u32)) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
     img
 }
 
-fn map_imgage_to_palette(c: &mut Criterion) {
+fn map_image_to_palette(c: &mut Criterion) {
     let sizes = [(500, 500), (1080, 720), (1920, 1080), (3440, 1440)];
 
     let mut group = c.benchmark_group("map_image_to_palette");
@@ -64,7 +64,7 @@ fn map_imgage_to_palette(c: &mut Criterion) {
                 |b, &input| {
                     let mut img = DynamicImage::from(img_buf_noise(input.0));
 
-                    let palette = &TESTING_PALLETE;
+                    let palette = &TESTING_PALETTE;
 
                     b.iter(|| {
                         map_image_to_palette(
@@ -79,5 +79,5 @@ fn map_imgage_to_palette(c: &mut Criterion) {
     }
 }
 
-criterion_group!(benches, map_imgage_to_palette);
+criterion_group!(benches, map_image_to_palette);
 criterion_main!(benches);

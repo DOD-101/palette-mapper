@@ -1,6 +1,6 @@
 //! CLI tool for `palette_mapper` lib
 //!
-//! ## Currently supported formats for pallete
+//! ## Currently supported formats for palette
 //!
 //! The used palette is read from a file. Currently supported formats for this file are:
 //!
@@ -63,7 +63,7 @@ fn main() -> Result<()> {
     }
 
     let mut steps = StepBuilder::new(vec![
-        "Loading pallete".to_string(),
+        "Loading palette".to_string(),
         "Loading image".to_string(),
         "Converting image".to_string(),
         "Saving Image".to_string(),
