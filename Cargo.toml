@@ -1,5 +1,5 @@
 [workspace]
-members = ["cli", "lib", "macros", "palettes", "web"]
+members = ["cli", "lib", "macros", "palettes", "web/wasm"]
 resolver = "3"
 
 [workspace.package]

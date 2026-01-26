@@ -3,3 +3,15 @@
 /web/pkg/
 /web/target/
 .build
+
+# web
+web/node_modules
+
+# Output
+web/.output
+web/.svelte-kit
+web/build
+
+# Vite
+web/vite.config.js.timestamp-*
+web/vite.config.ts.timestamp-*

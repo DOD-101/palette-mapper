@@ -977,6 +977,7 @@ dependencies = [
  "image",
  "palette-mapper-lib",
  "serde",
+ "serde_json",
  "strum",
  "wasm-bindgen",
 ]

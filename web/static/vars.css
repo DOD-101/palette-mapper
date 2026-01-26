@@ -1,0 +1,24 @@
+@media (prefers-color-scheme: light) {
+  :root {
+    --text: #0e0b1e;
+    --text-alt: #e5e2f4;
+    --background: #e1e0ff;
+    --primary: #30296b;
+    --secondary: #d284a2;
+    --accent: #b95b46;
+
+    --confirm: 22, 128, 57;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #e5e2f4;
+    --text-alt: var(--text);
+    --background: #06050e;
+    --primary: #9b93d6;
+    --secondary: #7b2e4c;
+    --accent: #b95c47;
+
+    --confirm: 22, 128, 57;
+  }
+}

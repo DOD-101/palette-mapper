@@ -65,9 +65,14 @@
               hyperfine
               prek
 
+              # for ./fetch-palettes.sh
+              jq
+
+              # for ./web
               wasm
               wasm-pack
-              jq
+              deno
+              svelte-language-server
 
               # benchmarking and testing
               cargo-criterion

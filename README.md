@@ -18,11 +18,11 @@ Palette Mapper is split into 3 different things:
 
 - [ ] Add testing
 
-    - [ ] CI
-
     - [ ] Benchmarking with hyperfine for `cli`
 
     - [ ] e2e testing for `web`
+
+    - [x] CI
 
     - [x] Benchmarking with criterion for `lib`
 
@@ -46,7 +46,7 @@ Palette Mapper is split into 3 different things:
 
 - [ ] Add examples
 
-- [ ] Add checks for misspelling of palette
+- [x] Add checks for misspelling of palette
 
 - [ ] *(Possibly)* Expand options for cli
 

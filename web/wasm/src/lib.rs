@@ -2,7 +2,7 @@
 use std::io::Cursor;
 use std::str::FromStr;
 
-use image::{ImageReader, Rgba};
+use image::ImageReader;
 use palette_mapper::distance::Algorithms;
 use palette_mapper::{Palette, map_image_to_palette};
 use strum::VariantNames;
@@ -24,6 +24,7 @@ pub fn algorithms() -> Vec<String> {
 /// the web frontend. Any errors are to be treated as bugs. We could just panic, but this gives us
 /// an easier method of working with the errors. This might change in the future
 #[wasm_bindgen]
+#[derive(Debug)]
 pub enum MapErr {
     /// The passed algorithm [`&str`] cannot be converted into an algorithm
     InvalidAlgorithm,
@@ -33,8 +34,8 @@ pub enum MapErr {
     FormatNotUnderstood,
     /// Failed to (re-)encode the image after conversion and write it to the output buffer
     FailedToEncode,
-    /// The passed rgba values in the palette are invalid
-    InvalidRgbaValues,
+    /// The passed string for the palette could not be deserialized successfully
+    InvalidPaletteString,
 }
 
 /// Main function used for interfacing with the js code to facilitate the conversion of images
@@ -52,7 +53,7 @@ pub enum MapErr {
 /// This function should never panic, instead error-ing as necessary. This might change in the
 /// future.
 #[wasm_bindgen]
-pub fn map_image(img: Vec<u8>, palette: &[u8], algorithm: &str) -> Result<Vec<u8>, MapErr> {
+pub fn map_image(img: Vec<u8>, palette: &str, algorithm: &str) -> Result<Vec<u8>, MapErr> {
     let mut output = Cursor::new(Vec::with_capacity(img.len()));
 
     let reader = ImageReader::new(Cursor::new(img))
@@ -65,21 +66,7 @@ pub fn map_image(img: Vec<u8>, palette: &[u8], algorithm: &str) -> Result<Vec<u8
 
     let mut buf = reader.decode().map_err(|_| MapErr::InvalidImg)?;
 
-    let mut pal = Palette::default();
-
-    let chunks = {
-        let (chunks, remainder) = palette.as_chunks::<4>();
-
-        if !remainder.is_empty() {
-            return Err(MapErr::InvalidRgbaValues);
-        }
-
-        chunks
-    };
-
-    for cols in chunks {
-        pal.add_color(Rgba::from([cols[0], cols[1], cols[2], cols[3]]));
-    }
+    let pal: Palette = serde_json::from_str(palette).map_err(|_| MapErr::InvalidPaletteString)?;
 
     map_image_to_palette(
         &mut buf,
