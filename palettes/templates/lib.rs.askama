@@ -1,10 +1,14 @@
 use palette_mapper::{color_palette, Palette};
 
+#[cfg(target_family = "wasm")]
+use wasm_bindgen::prelude::wasm_bindgen;
+
 {% macro base(base, themes) %}
     /// Base{{base}} themes
     #[allow(missing_docs)]
     #[cfg_attr(feature = "strum", derive(strum::EnumString, strum::Display, strum::EnumIter, strum::EnumCount, strum::VariantArray, strum::VariantNames))]
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    #[cfg_attr(target_family = "wasm", wasm_bindgen)]
     pub enum Base{{base}} {
         {% for theme in themes -%}
             {{ theme.name | enum_name }},
