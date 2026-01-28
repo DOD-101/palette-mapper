@@ -1,4 +1,4 @@
-# Palette Mapper 🎨
+# <img src="./web/static/favicon.svg" style="height:1em;"> Palette Mapper
 
 > Make any image fit your color scheme
 
