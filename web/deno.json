@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json",
   "private": true,
   "nodeModulesDir": "auto",
 
@@ -9,10 +10,17 @@
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "e2e": {
+      "command": "docker run --mount type=bind,src=./playwright-report,dst=/app/playwright-report --mount type=bind,src=../assets/test-imgs/,dst=/app/test-imgs,readonly palette-mapper-e2e:latest",
+      "dependencies": ["e2e-build"]
+    },
+    "e2e-build": "docker build -f e2e/Dockerfile . -t palette-mapper-e2e",
+    "e2e-report": "deno run -A npm:@playwright/test show-report"
   },
 
   "imports": {
+    "@playwright/test": "npm:@playwright/test@^1.58.0",
     "@sveltejs/adapter-static": "npm:@sveltejs/adapter-static@^3.0.10",
     "@sveltejs/kit": "npm:@sveltejs/kit@^2.49.1",
     "@sveltejs/vite-plugin-svelte": "npm:@sveltejs/vite-plugin-svelte@^6.2.1",
