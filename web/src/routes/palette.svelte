@@ -94,8 +94,12 @@
             <FileUpload label={pal_label} files={pal_files} />
         {:else}
             <div>
-                <input type="search" id="test" bind:value={pal_search} />
-                <select placeholder="Search themes" bind:value={pal_select}>
+                <input type="search" bind:value={pal_search} />
+                <select
+                    placeholder="Search palettes"
+                    id="base-palettes"
+                    bind:value={pal_select}
+                >
                     {#each wasm.base16() as base16}
                         {#if search_theme(base16)}
                             <option value="base16::{base16}"

@@ -19,3 +19,4 @@ web/vite.config.ts.timestamp-*
 
 # e2e
 web/test-results/
+web/playwright-report/
