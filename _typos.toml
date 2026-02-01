@@ -1,0 +1,3 @@
+[default.extend-words]
+# upstream naming
+darcula = "darcula"
