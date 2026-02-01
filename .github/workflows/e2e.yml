@@ -10,6 +10,7 @@ name: End-2-End Tests
     branches: ["master"]
     paths:
       - "web/**"
+  workflow_dispatch:
 
 jobs:
   build:
