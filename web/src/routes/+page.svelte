@@ -11,6 +11,8 @@
     });
 </script>
 
+<h1>Palette Mapper</h1>
+
 <Sidebar />
 
 <div id="img_container">
@@ -18,14 +20,24 @@
 </div>
 
 <style>
+    h1 {
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        margin: 2rem;
+    }
+
     #img_container {
-        display: block;
         position: relative;
+        display: block;
+        width: 100%;
+
         #img_preview {
             position: absolute;
             top: 50%;
-            left: 0;
-            transform: translateY(-50%);
+            left: 50%;
+            transform: translate(-50%, -50%);
             max-width: 85vw;
             max-height: 95vh;
             width: auto;

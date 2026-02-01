@@ -9,7 +9,5 @@
 <style>
     .row {
         padding: 5px 0;
-        display: flex;
-        flex-direction: column;
     }
 </style>

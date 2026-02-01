@@ -7,7 +7,7 @@
 
     import Palette from "./palette.svelte";
 
-    import * as wasm from "../../wasm/pkg/";
+    import * as wasm from "../../wasm/pkg";
 
     let algorithm = $state("");
 
@@ -72,20 +72,31 @@
         }
     });
 
-    function submit() {
+    function submit(
+        e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+    ) {
         const start = performance.now();
 
         if (!image_bytes) {
-            new UiNotification(NotificationLevel.Debug, `No image bytes set`);
+            new UiNotification(
+                NotificationLevel.Error,
+                `No image set`,
+            ).display();
 
             return;
         }
 
+        // TODO: Validate palette
         if (!palette) {
-            new UiNotification(NotificationLevel.Debug, `No palette set`);
+            new UiNotification(
+                NotificationLevel.Error,
+                `No palette set`,
+            ).display();
 
             return;
         }
+
+        animateSubmit(e);
 
         console.log(
             "Converting image with params:\n(algorithm)",
@@ -116,16 +127,62 @@
             algorithm: algorithm,
         });
     }
+
+    function animateSubmit(
+        e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+    ) {
+        locked = true;
+
+        let ripple = document.createElement("div");
+
+        ripple.classList.add("ripple");
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+
+        e.currentTarget.appendChild(ripple);
+
+        setTimeout(() => {
+            ripple.remove();
+            locked = false;
+        }, 400);
+    }
+
+    let locked = $state(false);
+
+    function submitMouseover(
+        e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+    ) {
+        let submit_btn = e.currentTarget;
+
+        if (!submit_btn) {
+            return;
+        }
+
+        submit_btn.onmousemove = (e) => {
+            const rect = submit_btn.getBoundingClientRect(),
+                x = e.clientX - rect.left,
+                y = e.clientY - rect.top;
+
+            if (!locked) {
+                submit_btn.style.setProperty("--mouse-x", `${x}px`);
+                submit_btn.style.setProperty("--mouse-y", `${y}px`);
+            }
+        };
+    }
 </script>
 
 <div class="sidebar">
     <div id="inputs">
         <Row>
-            <label for="algorithm">Algorithm</label>
-
+            <h5 class="heading">Algorithm</h5>
             <select
                 name="algorithm"
-                class="input-elm"
+                class="input-elm algorithm"
                 id="algorithms"
                 bind:value={algorithm}
                 required
@@ -143,15 +200,20 @@
         <Palette bind:palette />
 
         <Row>
+            <h5 class="heading">Image</h5>
             <FileUpload
                 label={image_label}
                 bind:files={image_files}
                 classNames="input-elm"
+                title="Select image to map."
             />
         </Row>
 
-        <button onclick={() => submit()} id="submit" class="input-elm"
-            >Map Image!</button
+        <button
+            onclick={(e) => submit(e)}
+            onmousemove={submitMouseover}
+            id="submit"
+            class="input-elm">Map Image!</button
         >
     </div>
 </div>
@@ -179,34 +241,112 @@
 
             :global(.input-elm) {
                 width: 10vw;
+                height: 1.2lh;
+                padding: 0;
                 max-width: 200px;
+                transition:
+                    background-color 200ms ease-in-out,
+                    scale 200ms ease-in-out;
+                border: 2px solid var(--grid-lines);
+                border-radius: 4px;
+                margin: 0;
+                box-sizing: border-box;
+            }
+
+            :global(.heading) {
+                margin: 0;
+                font-size: 1rem;
             }
 
             #submit {
-                background-color: var(--primary);
+                position: relative;
+                background-color: transparent;
                 font-weight: bold;
-                color: var(--text-alt);
+                color: var(--text);
                 cursor: pointer;
+                overflow: hidden;
 
-                border: none;
-                border-radius: 3px;
-                margin: 0.5rem;
+                border: 2px solid var(--grid-lines);
+                border-radius: 4px;
+                box-sizing: border-box;
+                width: calc(10vw - 1rem * 2);
+                margin: 1rem auto;
+                height: 2rem;
+
+                @media (max-width: 1400px) {
+                    width: 10vw;
+                    margin: 1rem initial;
+                }
 
                 transition: all 200ms ease-in-out;
+
                 &:hover {
-                    background-color: rgb(var(--confirm));
-                    box-shadow: 5px 20px 50px 5px rgba(var(--confirm), 0.5);
                     scale: 1.02;
+
+                    &::after {
+                        opacity: 1;
+                    }
+                }
+
+                &::after {
+                    opacity: 0;
+                    transition: opacity 400ms ease-in-out;
+                    content: "";
+                    height: 100%;
+                    width: 100%;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    z-index: -1;
+                    background-image: radial-gradient(
+                        circle at var(--mouse-x) var(--mouse-y),
+                        var(--confirm),
+                        transparent 40%
+                    );
                 }
             }
 
-            :global(select) {
+            .algorithm {
                 background-color: var(--secondary);
                 color: inherit;
                 border: none;
                 border-radius: 3px;
-                margin: 0.5rem;
+                padding-left: 6px;
+                box-sizing: border-box;
+
+                &:hover {
+                    background-color: var(--accent);
+                }
             }
+        }
+    }
+
+    :global(.ripple) {
+        position: absolute;
+        background-image: radial-gradient(
+            circle,
+            var(--confirm) 0%,
+            transparent 40%
+        );
+        width: 20px;
+        aspect-ratio: 1;
+        z-index: -1;
+        border-radius: 50%;
+        transform: scale(0);
+        animation: 500ms ease-in 0ms 1 running ripple-effect;
+    }
+
+    @keyframes ripple-effect {
+        from {
+            transform: scale(0);
+        }
+        40% {
+            transform: scale(40);
+            opacity: 1;
+        }
+        to {
+            transform: scale(40);
+            opacity: 0;
         }
     }
 </style>

@@ -3,7 +3,7 @@
         classNames,
         onclick,
         hidden,
-        size = 1.5,
+        size = 1,
     }: {
         classNames?: string;
         onclick: () => any;
@@ -36,13 +36,18 @@
         aspect-ratio: 1;
         border-radius: 10rem;
         border: none;
-        background-color: #ff0047;
+        background-color: var(--background);
+        color: var(--text);
 
         iconify-icon {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+
+            &:hover {
+                scale: 1.05;
+            }
         }
     }
 </style>

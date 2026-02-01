@@ -24,9 +24,9 @@ Palette Mapper is split into 3 different things:
 
     - [ ] Make it look better
 
-        - [ ] Change color scheme (dependent on selected palette?)
+        - [x] Change color scheme (dependent on selected palette?)
 
-        - [ ] Add grid to background
+        - [x] Add grid to background
 
         - [ ] Show image output location
 
@@ -41,6 +41,10 @@ Palette Mapper is split into 3 different things:
 ---
 
 ### Other (lower priority)
+
+- `web`
+
+    - [ ] allow clicking on image to bring up preview pop-up
 
 - [ ] Implement more distance algorithms
 

@@ -59,7 +59,7 @@
         />
     </div>
     {#if !selected}
-        <div class="results-box input-elm">
+        <div class="input-elm results-box">
             {#each wasm.base16() as base16}
                 {#if search_theme(base16)}
                     <button
@@ -90,6 +90,7 @@
         background-color: var(--secondary);
         border-radius: 6px;
         margin: 0.25rem 0.5rem 0rem 0.5rem;
+        border-bottom: none !important;
 
         &.results-visible {
             border-radius: 6px 6px 0px 0px;
@@ -102,6 +103,7 @@
             color: var(--text);
             box-sizing: border-box;
             width: calc(100% - 1.1rem);
+            transition: scale 200ms ease-in-out;
 
             &:focus {
                 outline: none;
@@ -111,6 +113,7 @@
 
         iconify-icon {
             position: absolute;
+            transition: scale 200ms ease-in-out;
 
             top: 50%;
             left: 2px;
@@ -126,14 +129,24 @@
 
             transform: translateY(-50%);
         }
+
+        &:hover iconify-icon {
+            scale: 1.05;
+        }
     }
 
     .results-box {
-        overflow-y: scroll;
-        max-height: 10rem;
-        margin: 0rem 0.5rem;
-        border-radius: 0px 0px 3px 3px;
         background-color: var(--primary);
+        border-radius: 0px 0px 3px 3px;
+        border-top: none !important;
+        box-sizing: border-box;
+        height: initial !important;
+        margin: 0rem 0.5rem;
+        max-height: 10rem;
+        overflow-y: scroll;
+        padding: 2px !important;
+
+        scrollbar-color: var(--accent) transparent;
 
         button {
             overflow-x: hidden;
@@ -144,7 +157,7 @@
             color: var(--text);
 
             border: none;
-            border-radius: inherit;
+            border-radius: 3px;
             background-color: var(--secondary);
 
             &:hover {

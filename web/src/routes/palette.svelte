@@ -86,27 +86,24 @@
 </script>
 
 <Row>
-    <p class="heading">Palette</p>
+    <h5 class="heading">Palette</h5>
     {#if palette_source.get() == "Undecided" || palette_source.get() == "Upload"}
         <div class="row-direction">
             {#if palette_source.get() == "Upload"}
-                <div>
-                    <ClearBtn
-                        classNames="palette clear-btn"
-                        onclick={() => {
-                            pal_files = undefined;
-                        }}
-                        hidden={!(pal_files && pal_files.length > 0)}
-                    />
-                </div>
-            {/if}
-            <div>
-                <FileUpload
-                    label={pal_label}
-                    bind:files={pal_files}
-                    classNames="input-elm"
+                <ClearBtn
+                    classNames="palette clear-btn"
+                    onclick={() => {
+                        pal_files = undefined;
+                    }}
+                    hidden={!(pal_files && pal_files.length > 0)}
                 />
-            </div>
+            {/if}
+            <FileUpload
+                label={pal_label}
+                bind:files={pal_files}
+                classNames="input-elm"
+                title="Select palette to use from file."
+            />
         </div>
     {/if}
 
@@ -121,6 +118,7 @@
 
 <style>
     .row-direction {
+        position: relative;
         display: flex;
         flex-direction: row;
         margin: 0;
@@ -130,10 +128,6 @@
     .or {
         text-align: center;
         margin: 0.5rem;
-    }
-
-    .heading {
-        margin: 0;
     }
 
     :global(.palette.clear-btn) {

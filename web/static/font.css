@@ -1,18 +1,23 @@
 /* TODO: Vendor this */
-@import url("https://fonts.googleapis.com/css?family=Asap:700|Asap:400");
+@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Stack+Sans+Notch:wght@200..700&display=swap");
 
 body {
-  font-family: "Asap";
-  font-weight: 400;
+  font-family: "Chakra Petch";
+  font-weight: 500;
 }
 
-h1,
+h1 {
+  font-family: "Stack Sans Notch";
+  font-weight: 500;
+  z-index: 10;
+  color: var(--text);
+}
 h2,
 h3,
 h4,
 h5 {
-  font-family: "Asap";
-  font-weight: 700;
+  font-family: "Chakra Petch";
+  font-weight: 600;
 }
 
 html {
@@ -20,7 +25,7 @@ html {
 } /* 16px */
 
 h1 {
-  font-size: 4.21rem; /* 67.36px */
+  font-size: 4rem;
 }
 
 h2 {
