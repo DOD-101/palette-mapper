@@ -14,25 +14,39 @@ Palette Mapper is split into 3 different things:
 
 ## 🚧 TODO 🚧
 
+### 0.1 release
+
 <!-- TODO: See below -->
 
-- [ ] Add testing
+- [ ] `web`
 
-    - [ ] Benchmarking with hyperfine for `cli`
+    - [ ] Notifications (see `./web/src/lib/ui_notification.ts`)
 
-    - [ ] e2e testing for `web`
+    - [ ] Make it look better
 
-    - [x] CI
+        - [ ] Change color scheme (dependent on selected palette?)
 
-    - [x] Benchmarking with criterion for `lib`
+        - [ ] Add grid to background
 
-    - [x] Snapshot testing for `lib`
+        - [ ] Show image output location
 
-- [x] Create `web`
+            - [ ] Before and after?
 
-- [ ] Improve `web` and `cli` (UI / features)
+        - [ ] Allow toggling light and dark mode
 
-- [x] Add pre-defined palettes
+    - [ ] Cleanup (remove stray `console.log`s, etc.)
+
+- [ ] `cli`
+
+    - [ ] completions (via clap-complete)
+
+- [ ] Add examples
+
+- [ ] Finish other todos
+
+---
+
+### Other (lower priority)
 
 - [ ] Implement more distance algorithms
 
@@ -44,9 +58,7 @@ Palette Mapper is split into 3 different things:
 
     - [x] Manhattan Distance
 
-- [ ] Add examples
-
-- [x] Add checks for misspelling of palette
+- [ ] Add caching to the ci
 
 - [ ] *(Possibly)* Expand options for cli
 
@@ -55,6 +67,28 @@ Palette Mapper is split into 3 different things:
     - [ ] Batch processing
 
     - [ ] Lightening
+
+---
+
+### Done
+
+- [x] Add pre-defined palettes
+
+- [x] Add checks for misspelling of palette
+
+- [x] Create `web`
+
+- [x] Add testing
+
+    - [x] ~Benchmarking with hyperfine for `cli`~
+
+    - [x] e2e testing for `web`
+
+    - [x] CI
+
+    - [x] Benchmarking with criterion for `lib`
+
+    - [x] Snapshot testing for `lib`
 
 ## 🖼️ Examples 🖼️
 

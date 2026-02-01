@@ -62,7 +62,6 @@
             packages = with pkgs; [
               toolchain
 
-              hyperfine
               prek
 
               # for ./fetch-palettes.sh
