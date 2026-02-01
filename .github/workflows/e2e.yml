@@ -1,0 +1,25 @@
+---
+name: End-2-End Tests
+
+"on":
+  push:
+    branches: ["master"]
+    paths:
+      - "web/**"
+  pull_request:
+    branches: ["master"]
+    paths:
+      - "web/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: denoland/setup-deno@v2
+      - uses: docker/setup-docker-action@v4
+      - name: Run e2e tests with docker
+        run: |
+          cd web
+          deno task e2e

@@ -1,6 +1,7 @@
+---
 name: Checks
 
-on:
+"on":
   push:
     branches: ["master"]
   pull_request:
@@ -14,5 +15,5 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: j178/prek-action@v1
