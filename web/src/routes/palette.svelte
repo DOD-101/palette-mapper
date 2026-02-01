@@ -3,6 +3,7 @@
     import FileUpload from "$lib/file_upload.svelte";
     import * as wasm from "../../wasm/pkg/";
     import ClearBtn from "$lib/clear_btn.svelte";
+    import PaletteSearch from "./palette_search.svelte";
 
     let { palette = $bindable() }: { palette: string } = $props();
 
@@ -39,18 +40,7 @@
         return file.name;
     });
 
-    let pal_search = $state("");
-
     let pal_select = $state("");
-
-    function search_theme(term: string) {
-        // smart-case
-        if (pal_search.toLowerCase() == pal_search) {
-            term = term.toLowerCase();
-        }
-
-        return term.includes(pal_search);
-    }
 
     await wasm.default();
 
@@ -125,62 +115,11 @@
     {/if}
 
     {#if palette_source.get() == "Undecided" || palette_source.get() == "PreDefined"}
-        <div class="row-direction">
-            {#if palette_source.get() == "PreDefined"}
-                <ClearBtn
-                    classNames="palette clear-btn"
-                    onclick={() => {
-                        pal_select = "";
-                    }}
-                />
-            {/if}
-            <div>
-                <input
-                    type="search"
-                    bind:value={pal_search}
-                    class="input-elm"
-                />
-                <select
-                    placeholder="Search palettes"
-                    id="base-palettes"
-                    bind:value={pal_select}
-                    class="input-elm"
-                >
-                    {#each wasm.base16() as base16}
-                        {#if search_theme(base16)}
-                            <option value="base16::{base16}"
-                                >{base16} (Base16)</option
-                            >
-                        {/if}
-                    {/each}
-
-                    {#each wasm.base24() as base24}
-                        {#if search_theme(base24)}
-                            <option value="base24::{base24}"
-                                >{base24} (Base24)</option
-                            >
-                        {/if}
-                    {/each}
-                </select>
-            </div>
-        </div>
+        <PaletteSearch bind:selected={pal_select} />
     {/if}
 </Row>
 
 <style>
-    input[type="search"] {
-        background-color: var(--secondary);
-        border: none;
-        border-radius: 6px;
-        color: inherit;
-        margin: 0.5rem;
-        transition: background-color 200ms ease-in-out;
-
-        &:hover {
-            background-color: var(--accent);
-        }
-    }
-
     .row-direction {
         display: flex;
         flex-direction: row;

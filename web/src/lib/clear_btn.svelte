@@ -3,12 +3,25 @@
         classNames,
         onclick,
         hidden,
-    }: { classNames?: string; onclick: () => any; hidden?: boolean } = $props();
+        size = 1.5,
+    }: {
+        classNames?: string;
+        onclick: () => any;
+        hidden?: boolean;
+        size?: number;
+    } = $props();
 
     import "iconify-icon";
 </script>
 
-<button {onclick} class={classNames} aria-label="Clear" {hidden}>
+<button
+    {onclick}
+    class={classNames}
+    aria-label="Clear"
+    {hidden}
+    style:height="{size}rem"
+    style:width="{size}rem"
+>
     <iconify-icon
         icon="material-symbols:close-rounded"
         height="1rem"
@@ -21,8 +34,6 @@
     button {
         position: relative;
         aspect-ratio: 1;
-        height: 1.5rem;
-        width: 1.5rem;
         border-radius: 10rem;
         border: none;
         background-color: #ff0047;

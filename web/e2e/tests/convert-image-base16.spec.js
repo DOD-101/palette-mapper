@@ -10,12 +10,11 @@ test("convert image with pre-defined palette", async ({ page }, testInfo) => {
   });
   await expect(await select_algorithm).toEqual([algorithm]);
 
-  const palette = "base16::Everforest";
-
-  const select_palette = test.step("select palette", () => {
-    return page.locator("#base-palettes").selectOption(palette);
+  await test.step("select palette", () => {
+    return page
+      .locator(".search-container .results-box *:nth-child(5)")
+      .click();
   });
-  await expect(await select_palette).toEqual([palette]);
 
   await test.step("upload image", async () => {
     return await page
