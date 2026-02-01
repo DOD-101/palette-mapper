@@ -12,6 +12,7 @@ palette-mapper-macros = { version = "*", path = "./macros" }
 palette-mapper-palettes = { version = "*", path = "./palettes" }
 
 clap = { version = "4.5.54", features = ["derive", "string"] }
+clap_complete = { version = "4.5.65", features = ["unstable-dynamic"] }
 image = { version = "0.25.9", default-features = false }
 rayon.version = "1.11.0"
 serde = { version = "1.0.228", features = ["derive"] }

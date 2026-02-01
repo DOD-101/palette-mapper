@@ -8,14 +8,15 @@
 //!
 //! ## Usage
 //!
-//! `palette-mapper ./input.png palette.json`
+//! `palette-mapper ./input.png -p palette.json`
 //!
 //! For more options run `palette-mapper --help`
 use anyhow::{Ok, Result, anyhow, bail};
 use clap::{
-    Parser,
+    CommandFactory, Parser,
     builder::{PossibleValuesParser, TypedValueParser},
 };
+use clap_complete::CompleteEnv;
 use image::DynamicImage;
 use palette_mapper_palettes::{Base16, Base24};
 use std::{
@@ -90,6 +91,8 @@ impl Cli {
 }
 
 fn main() -> Result<()> {
+    CompleteEnv::with_factory(Cli::command).complete();
+
     let cli = Cli::parse();
 
     if cli.non_interactive {

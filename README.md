@@ -36,10 +36,6 @@ Palette Mapper is split into 3 different things:
 
     - [ ] Cleanup (remove stray `console.log`s, etc.)
 
-- [ ] `cli`
-
-    - [ ] completions (via clap-complete)
-
 - [ ] Finish other todos
 
 ---
@@ -90,6 +86,10 @@ Palette Mapper is split into 3 different things:
 
     - [x] Snapshot testing for `lib`
 
+- [x] `cli`
+
+    - [x] completions (via clap-complete)
+
 ## 🖼️ Examples 🖼️
 
 ### Tokyo Rail
@@ -133,6 +133,14 @@ Palette Mapper is split into 3 different things:
     <img width=400 src="./assets/examples/nyc_subway_Zenbones.jpg" alt="NYC Subway Zenbones">
     <img width=400 src="./assets/examples/nyc_subway_DarkMetalKhold.jpg" alt="NYC Subway DarkMetalKhold">
 </details>
+
+## CLI completions
+
+We use [clap-complete's](https://docs.rs/clap_complete/latest/clap_complete/env/index.html) `unstable-dynamic` feature to generate completions.
+
+To generate completions run (see clap-complete's docs for more info):
+
+`echo "source <(COMPLETE=bash your_program)" >> ~/.bashrc`
 
 ## 💝 Acknowledgments 💝
 
