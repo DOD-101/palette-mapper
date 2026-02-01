@@ -12,7 +12,7 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "e2e": {
-      "command": "docker run --mount type=bind,src=./playwright-report,dst=/app/playwright-report --mount type=bind,src=../assets/test-imgs/,dst=/app/test-imgs,readonly palette-mapper-e2e:latest",
+      "command": "docker run --volume ./playwright-report:/app/playwright-report --mount type=bind,src=../assets/test-imgs/,dst=/app/test-imgs,readonly palette-mapper-e2e:latest",
       "dependencies": ["e2e-build"]
     },
     "e2e-build": "docker build -f e2e/Dockerfile . -t palette-mapper-e2e",
