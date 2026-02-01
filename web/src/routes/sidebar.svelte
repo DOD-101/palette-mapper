@@ -108,12 +108,13 @@
 </script>
 
 <div class="sidebar">
-    <form id="inputs">
+    <div id="inputs">
         <Row>
             <label for="algorithm">Algorithm</label>
 
             <select
                 name="algorithm"
+                class="input-elm"
                 id="algorithms"
                 bind:value={algorithm}
                 required
@@ -131,11 +132,17 @@
         <Palette bind:palette />
 
         <Row>
-            <FileUpload label={image_label} bind:files={image_files} />
+            <FileUpload
+                label={image_label}
+                bind:files={image_files}
+                classNames="input-elm"
+            />
         </Row>
 
-        <button onclick={() => submit()} id="submit">Map Image!</button>
-    </form>
+        <button onclick={() => submit()} id="submit" class="input-elm"
+            >Map Image!</button
+        >
+    </div>
 </div>
 
 <style>
@@ -144,8 +151,7 @@
         width: fit-content;
         height: 100vh;
         align-items: center;
-
-        overflow: hidden;
+        overflow: visible;
 
         #inputs {
             display: flex;
@@ -159,6 +165,11 @@
             border-radius: 8px;
 
             padding: 1rem;
+
+            :global(.input-elm) {
+                width: 10vw;
+                max-width: 200px;
+            }
 
             #submit {
                 background-color: var(--primary);
@@ -184,7 +195,6 @@
                 border: none;
                 border-radius: 3px;
                 margin: 0.5rem;
-                max-width: 11vw;
             }
         }
     }

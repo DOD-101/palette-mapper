@@ -1,12 +1,21 @@
 <script lang="ts">
     let {
         label,
+        classNames,
         files = $bindable(),
-    }: { label: string; files: FileList | undefined } = $props();
+    }: {
+        label: string;
+        classNames?: string;
+        files: FileList | undefined;
+    } = $props();
+
+    const id = $props.id();
 </script>
 
-<label for="file_upload" id="file_upload_label">{label}</label>
-<input type="file" id="file_upload" bind:files required />
+<label class={classNames} for="{id}-file_upload" id="file_upload_label"
+    >{label}</label
+>
+<input type="file" id="{id}-file_upload" bind:files required />
 
 <style>
     label {
