@@ -95,15 +95,26 @@
             "\n(image)",
             image_files,
         );
-        const converted = wasm.map_image(image_bytes, palette, algorithm);
 
-        converted_img.data = new Blob([converted as BlobPart], {
-            type: "image/png",
+        let worker = new Worker(new URL("./wasm.worker.ts", import.meta.url), {
+            type: "module",
         });
 
-        const end = performance.now();
+        worker.onmessage = (e) => {
+            console.log(
+                `Converted image. Took: ${performance.now() - start}ms`,
+            );
 
-        console.log(`Converted image. Took: ${end - start}ms`);
+            converted_img.data = new Blob([e.data as BlobPart], {
+                type: "image/png",
+            });
+        };
+
+        worker.postMessage({
+            image_bytes: image_bytes,
+            palette: palette,
+            algorithm: algorithm,
+        });
     }
 </script>
 

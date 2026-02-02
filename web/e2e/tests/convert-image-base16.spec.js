@@ -18,7 +18,7 @@ test("convert image with pre-defined palette", async ({ page }, testInfo) => {
 
   await test.step("upload image", async () => {
     return await page
-      .getByText(/^Image$/)
+      .getByTitle("Select image to map.")
       .setInputFiles("test-imgs/diagonal_rgb_gradient_500x500.png");
   });
 
@@ -27,9 +27,9 @@ test("convert image with pre-defined palette", async ({ page }, testInfo) => {
   });
 
   const img_src = await test.step("check output", async () => {
-    return await page.locator("#img_preview").getAttribute("src");
+    return await page.locator("#img_preview");
   });
-  await expect(await img_src).toMatch(/blob:/);
+  await expect(await img_src).toHaveAttribute("src", /blob:/);
 
   const sc = await page.screenshot();
   await testInfo.attach("screenshot", {
