@@ -1,0 +1,13 @@
+repos:
+  - repo: local
+    hooks:
+      - id: Deno fmt
+        name: Deno format
+        entry: deno fmt
+        language: system
+        pass_filenames: false
+      - id: deno lint
+        name: Deno lint
+        entry: deno lint
+        language: system
+        pass_filenames: false

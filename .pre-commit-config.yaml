@@ -8,6 +8,7 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+      - id: check-toml
   - repo: https://github.com/crate-ci/typos
     rev: v1.42.1
     hooks:
@@ -16,31 +17,31 @@ repos:
     hooks:
       - id: build
         name: Cargo Build
-        description: "Build the Rust project to ensure it compiles."
-        entry: cargo build --verbose
+        entry: cargo build
         language: system
         pass_filenames: false
-      - id: rustfmt
-        name: Check Rust formatting with rustfmt
-        description: "Ensure that code adheres to the rustfmt style guidelines."
-        entry: cargo fmt --all -- --check --color always
+        files: "^Cargo.toml|\\.rs$"
+      - id: fmt
+        name: Cargo Format
+        entry: cargo fmt --all -- --color always
         language: system
         pass_filenames: false
+        files: "^Cargo.toml|\\.rs$"
       - id: check
         name: Cargo Check
-        description: "Run a fast, non-invasive check on your Rust code."
-        entry: cargo check --verbose
+        entry: cargo check
         language: system
         pass_filenames: false
+        files: "^Cargo.toml|\\.rs$"
       - id: clippy
         name: Cargo Clippy
-        description: "Run Clippy for linting the Rust project."
-        entry: cargo clippy --verbose
+        entry: cargo clippy -- -D warnings
         language: system
         pass_filenames: false
+        files: "^Cargo.toml|\\.rs$"
       - id: test
         name: Cargo Test
-        description: "Run tests on the Rust codebase."
-        entry: cargo test --verbose
+        entry: cargo test
         language: system
         pass_filenames: false
+        files: "^Cargo.toml|\\.rs$"
