@@ -94,7 +94,6 @@
             return;
         }
 
-        // TODO: Validate palette
         if (!palette) {
             notifications.push_notification(
                 new UiNotification(
@@ -220,6 +219,7 @@
                 bind:files={image_files}
                 classNames="input-elm"
                 title="Select image to map."
+                accept="image/*"
             />
         </Row>
 

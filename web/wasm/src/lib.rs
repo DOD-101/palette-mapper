@@ -61,6 +61,13 @@ pub fn pal_from_base24(base: Base24) -> String {
     serde_json::to_string(&Palette::from(base)).unwrap()
 }
 
+/// Check if the given palette can be converted to a palette
+#[wasm_bindgen]
+#[must_use]
+pub fn is_valid_palette(palette: &str) -> bool {
+    serde_json::from_str::<Palette>(palette).is_ok()
+}
+
 /// Errors encountered when attempting to map an image to a color palette
 ///
 /// These are all errors specific to [`map_image`], since it is responsible for interfacing with

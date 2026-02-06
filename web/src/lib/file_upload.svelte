@@ -4,11 +4,13 @@
         classNames,
         files = $bindable(),
         title = "",
+        accept = "",
     }: {
         label: string;
         classNames?: string;
-        title?: string;
         files: FileList | undefined;
+        title?: string;
+        accept?: string;
     } = $props();
 
     const id = $props.id();
@@ -20,7 +22,7 @@
     id="file_upload_label"
     title={files && files.length >= 1 ? files[0].name : title}>{label}</label
 >
-<input type="file" id="{id}-file_upload" bind:files required />
+<input type="file" id="{id}-file_upload" bind:files required {accept} />
 
 <style>
     label {

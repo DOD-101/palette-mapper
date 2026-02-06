@@ -4,6 +4,11 @@
     import * as wasm from "../../wasm/pkg/";
     import ClearBtn from "$lib/clear_btn.svelte";
     import PaletteSearch from "./palette_search.svelte";
+    import {
+        notifications,
+        UiNotification,
+        NotificationLevel,
+    } from "$lib/notifications.svelte.ts";
 
     let { palette = $bindable() }: { palette: string } = $props();
 
@@ -46,6 +51,7 @@
 
     /** Read inputted palette from the given file */
     $effect(() => {
+        palette = "";
         let file = pal_files?.item(0);
         if (file) {
             const palette_reader = new FileReader();
@@ -58,6 +64,19 @@
                 const contents = reader_ev.target.result;
 
                 if (typeof contents !== "string") {
+                    return;
+                }
+
+                if (!wasm.is_valid_palette(contents)) {
+                    notifications.push_notification(
+                        new UiNotification(
+                            NotificationLevel.Error,
+                            "The uploaded palette is invalid.",
+                        ),
+                    );
+
+                    pal_files = undefined;
+
                     return;
                 }
 
@@ -103,6 +122,7 @@
                 bind:files={pal_files}
                 classNames="input-elm"
                 title="Select palette to use from file."
+                accept="application/json"
             />
         </div>
     {/if}

@@ -57,9 +57,6 @@ fn main() {
 
     let out_dir = env::var("OUT_DIR").unwrap();
 
-    println!("HERE: {out_dir}");
-    println!("HERE: {out_dir}");
-
     let content = l.render().unwrap();
     write(out_dir + "/generated.rs", content).unwrap();
 }
