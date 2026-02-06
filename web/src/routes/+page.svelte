@@ -53,7 +53,13 @@
 <Sidebar />
 
 <div id="img_container">
-    <img alt="" id="img_preview" src={img} />
+    {#if img}
+        <img alt="" id="img_preview" src={img} />
+    {:else}
+        <div class="img-placeholder">
+            <p>Mapped image will appear here.</p>
+        </div>
+    {/if}
 </div>
 
 <style>
@@ -70,7 +76,8 @@
         display: block;
         width: 100%;
 
-        #img_preview {
+        #img_preview,
+        .img-placeholder {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -79,6 +86,21 @@
             max-height: 95vh;
             width: auto;
             height: auto;
+        }
+
+        .img-placeholder {
+            border: 5px dashed var(--accent);
+            width: 20vw;
+            height: 20vh;
+            border-radius: 16px;
+
+            p {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                margin: 0;
+            }
         }
     }
 

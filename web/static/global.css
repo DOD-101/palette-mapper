@@ -1,6 +1,6 @@
 body {
   background-color: var(--background);
-  color: white;
+  color: var(--text);
   margin: 0;
   background-size: 40px 40px;
   background-image:

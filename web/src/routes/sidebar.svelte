@@ -19,13 +19,13 @@
     let image_bytes: Uint8Array | undefined = $state();
     let image_label: string = $derived.by(() => {
         if (image_files === undefined) {
-            return "Image";
+            return "Upload";
         }
 
         let file = image_files.item(0);
 
         if (file === null) {
-            return "Image";
+            return "Upload";
         }
 
         return file.name;

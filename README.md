@@ -22,15 +22,13 @@ Palette Mapper is split into 3 different things:
 
     - [x] Notifications (see `./web/src/lib/ui_notification.ts`)
 
-    - [ ] Make it look better
+    - [x] Make it look better
 
-        - [x] Change color scheme (dependent on selected palette?)
+        - [x] Change color scheme ~(dependent on selected palette?)~
 
         - [x] Add grid to background
 
-        - [ ] Show image output location
-
-            - [ ] Before and after?
+        - [x] Show image output location
 
         - [x] Allow toggling light and dark mode
 
@@ -45,6 +43,12 @@ Palette Mapper is split into 3 different things:
 - [ ] `web`
 
     - [ ] allow clicking on image to bring up preview pop-up
+
+        - [ ] Before and after
+
+        - [ ] Download button
+
+    - [ ] loading spinner (on map image button)
 
 - [ ] Implement more distance algorithms
 
