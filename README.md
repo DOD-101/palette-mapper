@@ -20,7 +20,7 @@ Palette Mapper is split into 3 different things:
 
 - [ ] `web`
 
-    - [ ] Notifications (see `./web/src/lib/ui_notification.ts`)
+    - [x] Notifications (see `./web/src/lib/ui_notification.ts`)
 
     - [ ] Make it look better
 
@@ -42,7 +42,7 @@ Palette Mapper is split into 3 different things:
 
 ### Other (lower priority)
 
-- `web`
+- [ ] `web`
 
     - [ ] allow clicking on image to bring up preview pop-up
 
@@ -55,6 +55,8 @@ Palette Mapper is split into 3 different things:
     - [x] CIE76 LAB
 
     - [x] Manhattan Distance
+
+- [ ] Add time estimates
 
 - [ ] Add caching to the ci
 

@@ -1,5 +1,9 @@
 <script lang="ts">
-    import { UiNotification, NotificationLevel } from "$lib/ui_notification";
+    import {
+        notifications,
+        NotificationLevel,
+        UiNotification,
+    } from "$lib/notifications.svelte.ts";
     import { converted_img } from "./sidebar.svelte.ts";
 
     import Row from "$lib/row.svelte";
@@ -62,10 +66,12 @@
             };
 
             image_reader.onerror = (err) => {
-                new UiNotification(
-                    NotificationLevel.Error,
-                    "Failed to read image: " + err,
-                ).display();
+                notifications.push_notification(
+                    new UiNotification(
+                        NotificationLevel.Error,
+                        "Failed to read converted image: " + err,
+                    ),
+                );
             };
 
             image_reader.readAsArrayBuffer(file);
@@ -78,26 +84,36 @@
         const start = performance.now();
 
         if (!image_bytes) {
-            new UiNotification(
-                NotificationLevel.Error,
-                `No image set`,
-            ).display();
+            notifications.push_notification(
+                new UiNotification(
+                    NotificationLevel.Error,
+                    `No image uploaded. Nothing to convert.`,
+                ),
+            );
 
             return;
         }
 
         // TODO: Validate palette
         if (!palette) {
-            new UiNotification(
-                NotificationLevel.Error,
-                `No palette set`,
-            ).display();
+            notifications.push_notification(
+                new UiNotification(
+                    NotificationLevel.Error,
+                    `No palette set. What colors should be used?`,
+                ),
+            );
 
             return;
         }
 
         animateSubmit(e);
 
+        notifications.push_notification(
+            new UiNotification(
+                NotificationLevel.Info,
+                "Mapping image. This may take a sec.",
+            ),
+        );
         console.log(
             "Converting image with params:\n(algorithm)",
             algorithm,
@@ -112,9 +128,7 @@
         });
 
         worker.onmessage = (e) => {
-            console.log(
-                `Converted image. Took: ${performance.now() - start}ms`,
-            );
+            console.log(`Mapped image. Took: ${performance.now() - start}ms`);
 
             converted_img.data = new Blob([e.data as BlobPart], {
                 type: "image/png",

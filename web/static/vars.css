@@ -15,6 +15,12 @@
     --accent: #a7dcd8;
 
     --confirm: #3bc968;
+
+    /* Notifications */
+    --error: rgba(204, 2, 2, 0.2);
+    --warn: rgba(255, 103, 0, 0.2);
+    --info: rgba(110, 255, 225, 0.2);
+    --dots: #45456470;
   }
 }
 
@@ -31,5 +37,12 @@
     --accent: #30966f;
 
     --confirm: #168039;
+
+    /* Notifications */
+    --error: rgba(204, 2, 2, 0.3);
+    --warn: rgba(255, 103, 0, 0.3);
+    --info: rgba(110, 255, 225, 0.3);
+
+    --dots: #c4c5f950;
   }
 }
