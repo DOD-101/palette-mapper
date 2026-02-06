@@ -32,7 +32,7 @@ Palette Mapper is split into 3 different things:
 
             - [ ] Before and after?
 
-        - [ ] Allow toggling light and dark mode
+        - [x] Allow toggling light and dark mode
 
     - [ ] Cleanup (remove stray `console.log`s, etc.)
 
