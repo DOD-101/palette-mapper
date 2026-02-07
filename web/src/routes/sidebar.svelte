@@ -33,10 +33,9 @@
 
     let palette: string = $state("");
 
-    const wasmInit = async () => {
+    const wasmAlgorithms = async () => {
         await wasm.default();
 
-        // TODO: Figure out a better way to do this
         algorithm = wasm.algorithms()[0];
 
         return wasm.algorithms();
@@ -198,7 +197,7 @@
                 bind:value={algorithm}
                 required
             >
-                {#await wasmInit()}
+                {#await wasmAlgorithms()}
                     <option disabled>Loading…</option>
                 {:then algos}
                     {#each algos as algo}

@@ -14,31 +14,7 @@ Palette Mapper is split into 3 different things:
 
 ## 🚧 TODO 🚧
 
-### 0.1 release
-
 <!-- TODO: See below -->
-
-- [ ] `web`
-
-    - [x] Notifications (see `./web/src/lib/ui_notification.ts`)
-
-    - [x] Make it look better
-
-        - [x] Change color scheme ~(dependent on selected palette?)~
-
-        - [x] Add grid to background
-
-        - [x] Show image output location
-
-        - [x] Allow toggling light and dark mode
-
-    - [ ] Cleanup (remove stray `console.log`s, etc.)
-
-- [ ] Finish other todos
-
----
-
-### Other (lower priority)
 
 - [ ] `web`
 
@@ -48,7 +24,11 @@ Palette Mapper is split into 3 different things:
 
         - [ ] Download button
 
+        - [ ] fix submit button misalignment on small view widths (media query)
+
     - [ ] loading spinner (on map image button)
+
+    - [ ] add 404 page
 
 - [ ] Implement more distance algorithms
 
@@ -62,8 +42,6 @@ Palette Mapper is split into 3 different things:
 
 - [ ] Add time estimates
 
-- [ ] Add caching to the ci
-
 - [ ] *(Possibly)* Expand options for cli
 
     - [ ] Blurs
@@ -71,34 +49,6 @@ Palette Mapper is split into 3 different things:
     - [ ] Batch processing
 
     - [ ] Lightening
-
----
-
-### Done
-
-- [x] Add examples
-
-- [x] Add pre-defined palettes
-
-- [x] Add checks for misspelling of palette
-
-- [x] Create `web`
-
-- [x] Add testing
-
-    - [x] ~Benchmarking with hyperfine for `cli`~
-
-    - [x] e2e testing for `web`
-
-    - [x] CI
-
-    - [x] Benchmarking with criterion for `lib`
-
-    - [x] Snapshot testing for `lib`
-
-- [x] `cli`
-
-    - [x] completions (via clap-complete)
 
 ## 🖼️ Examples 🖼️
 
