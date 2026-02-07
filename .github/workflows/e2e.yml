@@ -28,21 +28,15 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      - name: Deno Cache
-        uses: actions/cache@v5
-        with:
-          path: |
-            ~/.deno
-            ~/.cache/deno
-          key: ${{ runner.os }}-deno-${{ hashFiles('**/deps.ts') }}
       - uses: denoland/setup-deno@v2
+        with:
+          cache: true
       - uses: docker/setup-docker-action@v4
       - name: Compile Wasm for web app
         run: |
           cd web
           cargo install wasm-pack
           deno task wasm
-
       - name: Run e2e tests with docker
         run: |
           cd web

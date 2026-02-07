@@ -8,10 +8,9 @@
 <svelte:head>
     <link rel="icon" href={favicon} />
     <title>Palette Mapper Web UI</title>
-    <link rel="stylesheet" href="/vars.css" />
-    <link rel="stylesheet" href="/font.css" />
-    <link rel="stylesheet" href="/font.css" />
-    <link rel="stylesheet" href="/global.css" />
+    <link rel="stylesheet" href="vars.css" />
+    <link rel="stylesheet" href="font.css" />
+    <link rel="stylesheet" href="global.css" />
 </svelte:head>
 
 <Notifications />
