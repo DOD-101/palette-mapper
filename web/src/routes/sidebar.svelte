@@ -43,7 +43,6 @@
     };
 
     $effect(() => {
-        console.log(image_files);
         if (!image_files) {
             return;
         }
@@ -57,7 +56,6 @@
                     return;
                 }
 
-                console.log(reader_ev);
                 const bytes = new Uint8Array(
                     reader_ev.target.result as ArrayBuffer,
                 );

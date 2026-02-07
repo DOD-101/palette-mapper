@@ -92,15 +92,7 @@
             return;
         }
 
-        if (pal_select.startsWith("base16::")) {
-            palette = wasm.pal_from_base16(
-                wasm.from_base_16_name(pal_select.slice(8)),
-            );
-        } else {
-            palette = wasm.pal_from_base24(
-                wasm.from_base_24_name(pal_select.slice(8)),
-            );
-        }
+        palette = wasm.pal_from_base(wasm.from_base_name(pal_select.slice(8)));
     });
 </script>
 

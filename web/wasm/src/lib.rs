@@ -5,7 +5,7 @@ use std::str::FromStr;
 use image::ImageReader;
 use palette_mapper::distance::Algorithms;
 use palette_mapper::{Palette, map_image_to_palette};
-use palette_mapper_palettes::{Base16, Base24};
+use palette_mapper_palettes::BaseBoth;
 use strum::IntoEnumIterator;
 
 use wasm_bindgen::prelude::*;
@@ -17,47 +17,24 @@ pub fn algorithms() -> Vec<String> {
     Algorithms::iter().map(|v| v.to_string()).collect()
 }
 
-// TODO: Make this DRY (macro)
-
-/// Get all base24 themes
+/// Get all base* themes
 #[wasm_bindgen]
 #[must_use]
-pub fn base24() -> Vec<String> {
-    Base24::iter().map(|v| v.to_string()).collect()
+pub fn base_both() -> Vec<String> {
+    BaseBoth::iter().map(|v| v.to_string()).collect()
 }
 
-/// Get all base16 themes
-#[wasm_bindgen]
-#[must_use]
-pub fn base16() -> Vec<String> {
-    Base16::iter().map(|v| v.to_string()).collect()
-}
-
-/// Try to parse `theme` to base16 theme
+/// Try to parse `theme` to [BaseBoth] theme
 #[wasm_bindgen]
 #[cfg(target_family = "wasm")]
-pub fn from_base_16_name(theme: &str) -> Result<Base16, MapErr> {
-    Base16::from_str(theme).map_err(|_| MapErr::InvalidThemeString)
+pub fn from_base_name(theme: &str) -> Result<BaseBoth, MapErr> {
+    BaseBoth::from_str(theme).map_err(|_| MapErr::InvalidThemeString)
 }
 
-/// Try to parse `theme` to base24 theme
+/// Return palette of [BaseBoth] theme
 #[wasm_bindgen]
 #[cfg(target_family = "wasm")]
-pub fn from_base_24_name(theme: &str) -> Result<Base24, MapErr> {
-    Base24::from_str(theme).map_err(|_| MapErr::InvalidThemeString)
-}
-
-/// Return palette of base16 theme
-#[wasm_bindgen]
-#[cfg(target_family = "wasm")]
-pub fn pal_from_base16(base: Base16) -> String {
-    serde_json::to_string(&Palette::from(base)).unwrap()
-}
-
-/// Return palette of base24 theme
-#[wasm_bindgen]
-#[cfg(target_family = "wasm")]
-pub fn pal_from_base24(base: Base24) -> String {
+pub fn pal_from_base(base: BaseBoth) -> String {
     serde_json::to_string(&Palette::from(base)).unwrap()
 }
 

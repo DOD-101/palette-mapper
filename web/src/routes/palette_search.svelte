@@ -8,8 +8,7 @@
     let selected_pretty = $derived.by(() => {
         if (selected.match(/^base/)) {
             const base = selected.slice(4, 6);
-            const name = selected.slice(8);
-            console.log(name);
+            const name = selected.slice(14);
 
             return `${name} (Base${base})`;
         }
@@ -60,22 +59,13 @@
     </div>
     {#if !selected}
         <div class="input-elm results-box">
-            {#each wasm.base16() as base16}
-                {#if search_theme(base16)}
+            {#each wasm.base_both() as palette}
+                {#if search_theme(palette)}
                     <button
                         onclick={() => {
-                            selected = `base16::${base16}`;
-                        }}>{base16} (Base16)</button
-                    >
-                {/if}
-            {/each}
-
-            {#each wasm.base24() as base24}
-                {#if search_theme(base24)}
-                    <button
-                        onclick={() => {
-                            selected = `base24::${base24}`;
-                        }}>{base24} (Base24)</button
+                            selected = `base16::${palette}`;
+                        }}
+                        >{palette.slice(6)} (Base{palette.slice(4, 6)})</button
                     >
                 {/if}
             {/each}

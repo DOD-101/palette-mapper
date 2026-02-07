@@ -50,9 +50,28 @@ fn get_themes(path: impl AsRef<Path>) -> Vec<Theme> {
 }
 
 fn main() {
+    let base16 = get_themes("./base16/");
+    let base24 = get_themes("./base24/");
+    let mut both: Vec<Theme> = base16
+        .iter()
+        .cloned()
+        .map(|mut t| {
+            t.name.insert_str(0, "Base16");
+
+            t
+        })
+        .collect();
+
+    both.extend(base24.iter().cloned().map(|mut t| {
+        t.name.insert_str(0, "Base24");
+
+        t
+    }));
+
     let l = Lib {
-        base16: get_themes("./base16/"),
-        base24: get_themes("./base24/"),
+        base16,
+        base24,
+        both,
     };
 
     let out_dir = env::var("OUT_DIR").unwrap();
@@ -87,11 +106,14 @@ struct Lib {
     base16: Vec<Theme>,
     /// The base 24 themes
     base24: Vec<Theme>,
+    /// Base 16 and 24 themes
+    both: Vec<Theme>,
 }
 
 /// A single theme found in the lib
 ///
 /// Themes are sourced form the `./base{16,24}/*.json` files.
+#[derive(Clone)]
 struct Theme {
     /// Name of the theme, derived from the file name
     name: String,

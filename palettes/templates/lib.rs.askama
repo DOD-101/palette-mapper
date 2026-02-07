@@ -4,15 +4,19 @@ use palette_mapper::{color_palette, Palette};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 {% macro base(base, themes) %}
-    /// Base{{base}} themes
+    {%- if base == "Both" -%}
+      /// Base16 and Base24 Themes in one
+    {%- else -%}
+      /// Base{{base}} themes
+    {%- endif %}
     #[allow(missing_docs)]
     #[cfg_attr(feature = "strum", derive(strum::EnumString, strum::Display, strum::EnumIter, strum::EnumCount, strum::VariantArray, strum::VariantNames))]
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     #[cfg_attr(target_family = "wasm", wasm_bindgen)]
     pub enum Base{{base}} {
-        {% for theme in themes -%}
+        {%- for theme in themes -%}
             {{ theme.name | enum_name }},
-        {% endfor %}
+        {% endfor -%}
     }
 
 
@@ -34,5 +38,6 @@ use wasm_bindgen::prelude::wasm_bindgen;
     }
 {% endmacro %}
 
-{{ base(16, base16) }}
-{{ base(24, base24) }}
+{{ base("16", base16) }}
+{{ base("24", base24) }}
+{{ base("Both", both) }}
