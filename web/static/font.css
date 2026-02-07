@@ -1,5 +1,82 @@
-/* TODO: Vendor this */
-@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Stack+Sans+Notch:wght@200..700&display=swap");
+@font-face {
+  font-family: "Stack Sans Notch";
+  src: url("fonts/Stack_Sans_Notch/StackSansNotch-VariableFont_wght.ttf")
+    format("truetype");
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("fonts/Chakra_Petch/ChakraPetch-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("fonts/Chakra_Petch/ChakraPetch-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("fonts/Chakra_Petch/ChakraPetch-Italic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("fonts/Chakra_Petch/ChakraPetch-BoldItalic.ttf") format("truetype");
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("fonts/Chakra_Petch/ChakraPetch-Light.ttf") format("truetype");
+  font-weight: 300; /* Light weight is typically around 300 */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("fonts/Chakra_Petch/ChakraPetch-LightItalic.ttf") format("truetype");
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("fonts/Chakra_Petch/ChakraPetch-Medium.ttf") format("truetype");
+  font-weight: 500; /* Medium weight is typically around 500 */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("fonts/Chakra_Petch/ChakraPetch-MediumItalic.ttf")
+    format("truetype");
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("fonts/Chakra_Petch/ChakraPetch-SemiBold.ttf") format("truetype");
+  font-weight: 600; /* SemiBold is typically around 600 */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("fonts/Chakra_Petch/ChakraPetch-SemiBoldItalic.ttf")
+    format("truetype");
+  font-weight: 600;
+  font-style: italic;
+}
+
+/* -- Begin Styles -- */
 
 body {
   font-family: "Chakra Petch";
@@ -29,21 +106,21 @@ h1 {
 }
 
 h2 {
-  font-size: 3.158rem; /* 50.56px */
+  font-size: 3.158rem;
 }
 
 h3 {
-  font-size: 2.369rem; /* 37.92px */
+  font-size: 2.369rem;
 }
 
 h4 {
-  font-size: 1.777rem; /* 28.48px */
+  font-size: 1.777rem;
 }
 
 h5 {
-  font-size: 1.333rem; /* 21.28px */
+  font-size: 1.333rem;
 }
 
 small {
-  font-size: 0.75rem; /* 12px */
+  font-size: 0.75rem;
 }

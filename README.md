@@ -168,7 +168,9 @@ To generate completions run (see clap-complete's docs for more info):
 
 - `./assets/examples/nyc_subway.jpg` by  [Sarthak Banga](https://www.pexels.com/@sarthak-banga-2150431485/) is in the Public Domain. Source: https://www.pexels.com/photo/night-train-passing-through-snowy-chicago-streets-35449810/
 
+---
 
+The fonts found in `./web/static/fonts` have their respective licenses found in their directories. See: `OFL.txt`
 
 The palettes found in `./palettes/base16/` and `./palettes/base24/` are derived (using `./fetch-palettes.sh`) from [Tinted Theming](https://github.com/tinted-theming/schemes) and are licensed under `MIT`.
 
