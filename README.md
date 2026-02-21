@@ -18,13 +18,13 @@ Palette Mapper is split into 3 different things:
 
 - [ ] `web`
 
-    - [ ] allow clicking on image to bring up preview pop-up
+    - [x] allow clicking on image to bring up preview pop-up
 
         - [ ] Before and after
 
-        - [ ] Download button
+        - [x] Download button
 
-        - [ ] fix submit button misalignment on small view widths (media query)
+    - [ ] fix submit button misalignment on small view widths (media query)
 
     - [ ] loading spinner (on map image button)
 

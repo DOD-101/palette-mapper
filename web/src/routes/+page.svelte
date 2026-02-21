@@ -1,15 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import Sidebar from "./sidebar.svelte";
-    import { converted_img } from "./sidebar.svelte.ts";
-
-    let img: string | undefined = $state();
-
-    $effect(() => {
-        if (converted_img.data) {
-            img = URL.createObjectURL(converted_img.data);
-        }
-    });
+    import Img from "./img.svelte";
 
     let light_mode = $state(
         window.matchMedia("(prefers-color-scheme: light)").matches,
@@ -52,15 +44,7 @@
 
 <Sidebar />
 
-<div id="img_container">
-    {#if img}
-        <img alt="" id="img_preview" src={img} />
-    {:else}
-        <div class="img-placeholder">
-            <p>Mapped image will appear here.</p>
-        </div>
-    {/if}
-</div>
+<Img />
 
 <style>
     h1 {
@@ -69,39 +53,6 @@
         top: 0;
 
         margin: 2rem;
-    }
-
-    #img_container {
-        position: relative;
-        display: block;
-        width: 100%;
-
-        #img_preview,
-        .img-placeholder {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            max-width: 85vw;
-            max-height: 95vh;
-            width: auto;
-            height: auto;
-        }
-
-        .img-placeholder {
-            border: 5px dashed var(--accent);
-            width: 20vw;
-            height: 20vh;
-            border-radius: 16px;
-
-            p {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                margin: 0;
-            }
-        }
     }
 
     .theme {
