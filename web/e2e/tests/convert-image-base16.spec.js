@@ -27,7 +27,7 @@ test("convert image with pre-defined palette", async ({ page }, testInfo) => {
   });
 
   const img_src = await test.step("check output", async () => {
-    return await page.locator("#img_preview");
+    return await page.locator(".img-preview");
   });
   await expect(await img_src).toHaveAttribute("src", /blob:/);
 
