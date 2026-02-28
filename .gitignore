@@ -1,5 +1,6 @@
 /target
 .direnv
+.envrc.local
 /web/pkg/
 /web/target/
 .build
