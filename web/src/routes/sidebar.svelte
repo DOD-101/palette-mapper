@@ -63,8 +63,10 @@
         e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
         const start = performance.now();
+        loading = true;
 
         if (img_data.original.data.size == 0) {
+            loading = false;
             notifications.push_notification(
                 new UiNotification(
                     NotificationLevel.Error,
@@ -76,6 +78,7 @@
         }
 
         if (!palette) {
+            loading = false;
             notifications.push_notification(
                 new UiNotification(
                     NotificationLevel.Error,
@@ -109,6 +112,7 @@
 
         worker.onmessage = (e) => {
             console.log(`Mapped image. Took: ${performance.now() - start}ms`);
+            loading = false;
 
             const originalNameNoExtension = img_data.original.file_name.replace(
                 /\.[^/.]+$/,
@@ -123,6 +127,7 @@
         };
 
         worker.onerror = (e) => {
+            loading = false;
             notifications.push_notification(
                 new UiNotification(
                     NotificationLevel.Error,
@@ -163,6 +168,7 @@
     }
 
     let locked = $state(false);
+    let loading = $state(false);
 
     function submitMouseover(
         e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
@@ -225,8 +231,16 @@
                 onclick={async (e) => await submit(e)}
                 onmousemove={submitMouseover}
                 id="submit"
-                class="input-elm">Map Image!</button
+                class="input-elm"
+                disabled={loading}
             >
+                {#if loading}
+                    <iconify-icon icon="svg-spinners:90-ring-with-bg"
+                    ></iconify-icon>
+                {:else}
+                    Map Image!
+                {/if}
+            </button>
         </Row>
     </div>
 </div>

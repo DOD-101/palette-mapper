@@ -26,7 +26,7 @@ Palette Mapper is split into 3 different things:
 
     - [x] fix submit button misalignment on small view widths (media query)
 
-    - [ ] loading spinner (on map image button)
+    - [x] loading spinner (on map image button)
 
     - [ ] add 404 page
 
