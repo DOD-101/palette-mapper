@@ -24,7 +24,7 @@ Palette Mapper is split into 3 different things:
 
         - [x] Download button
 
-    - [ ] fix submit button misalignment on small view widths (media query)
+    - [x] fix submit button misalignment on small view widths (media query)
 
     - [ ] loading spinner (on map image button)
 

@@ -220,12 +220,14 @@
             />
         </Row>
 
-        <button
-            onclick={async (e) => await submit(e)}
-            onmousemove={submitMouseover}
-            id="submit"
-            class="input-elm">Map Image!</button
-        >
+        <Row>
+            <button
+                onclick={async (e) => await submit(e)}
+                onmousemove={submitMouseover}
+                id="submit"
+                class="input-elm">Map Image!</button
+            >
+        </Row>
     </div>
 </div>
 
@@ -280,14 +282,8 @@
                 border: 2px solid var(--grid-lines);
                 border-radius: 4px;
                 box-sizing: border-box;
-                width: calc(10vw - 1rem * 2);
-                margin: 1rem auto;
+                margin: 0.5rem auto;
                 height: 2rem;
-
-                @media (max-width: 1400px) {
-                    width: 10vw;
-                    margin: 1rem initial;
-                }
 
                 transition: all 200ms ease-in-out;
 
