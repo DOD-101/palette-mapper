@@ -4,7 +4,7 @@
         NotificationLevel,
         UiNotification,
     } from "$lib/notifications.svelte.ts";
-    import { converted_img } from "./sidebar.svelte.ts";
+    import { img_data } from "./img.svelte.ts";
 
     import Row from "$lib/row.svelte";
     import FileUpload from "$lib/file_upload.svelte";
@@ -110,6 +110,8 @@
                 "Mapping image. This may take a sec.",
             ),
         );
+
+        img_data.original.data = new Blob([image_bytes as BlobPart]);
         console.log(
             "Converting image with params:\n(algorithm)",
             algorithm,
@@ -126,9 +128,18 @@
         worker.onmessage = (e) => {
             console.log(`Mapped image. Took: ${performance.now() - start}ms`);
 
-            converted_img.data = new Blob([e.data as BlobPart], {
+            img_data.converted.data = new Blob([e.data as BlobPart], {
                 type: "image/png",
             });
+        };
+
+        worker.onerror = (e) => {
+            notifications.push_notification(
+                new UiNotification(
+                    NotificationLevel.Error,
+                    `Failed to map image: ${e.message}`,
+                ),
+            );
         };
 
         worker.postMessage({

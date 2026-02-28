@@ -20,7 +20,7 @@ Palette Mapper is split into 3 different things:
 
     - [x] allow clicking on image to bring up preview pop-up
 
-        - [ ] Before and after
+        - [x] Before and after
 
         - [x] Download button
 

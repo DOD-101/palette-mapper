@@ -1,21 +1,37 @@
 <script lang="ts">
-    import { converted_img } from "./sidebar.svelte.ts";
+    import { untrack } from "svelte";
+    import { img_data } from "./img.svelte.ts";
     import "iconify-icon";
 
     let img: string | undefined = $state();
-
-    let img_height: number | undefined = $state();
+    let img_orig: string | undefined = $state();
 
     let overlay: boolean = $state(false);
+    let showOriginal: boolean = $state(false);
 
     $effect(() => {
-        if (converted_img.data) {
-            img = URL.createObjectURL(converted_img.data);
+        if (img_data.converted.data.size != 0) {
+            const old = untrack(() => img);
+            if (old) {
+                URL.revokeObjectURL(old);
+            }
+            img = URL.createObjectURL(img_data.converted.data);
+        }
+    });
+
+    $effect(() => {
+        if (img_data.original.data.size != 0) {
+            const old = untrack(() => img_orig);
+            if (old) {
+                URL.revokeObjectURL(old);
+            }
+            img_orig = URL.createObjectURL(img_data.original.data);
         }
     });
 
     function img_click() {
         overlay = !overlay;
+        showOriginal = false;
     }
 
     function download() {
@@ -46,12 +62,22 @@
                 onclick={img_click}
                 class={["img-preview-btn", overlay && "overlay"]}
             >
-                <img
-                    alt=""
-                    class={["img-preview", overlay && "overlay"]}
-                    style:height={img_height}
-                    src={img}
-                />
+                <div class="img-container">
+                    {#if showOriginal && img_orig}
+                        <img
+                            alt="Original"
+                            class={["img-preview", overlay && "overlay"]}
+                            style:width="50%"
+                            src={img_orig}
+                        />
+                    {/if}
+                    <img
+                        alt="Converted"
+                        class={["img-preview", overlay && "overlay"]}
+                        style:width={showOriginal ? "50%" : "100%"}
+                        src={img}
+                    />
+                </div>
             </button>
 
             {#if overlay}
@@ -65,16 +91,16 @@
                         icon="material-symbols:download-for-offline-rounded"
                     ></iconify-icon>
                 </button>
-                <!-- TODO: Implement Side by Side button -->
-                <!-- <button -->
-                <!--     aria-label="Before and after side by side" -->
-                <!--     title="Before and after" -->
-                <!--     class="overlay-action" -->
-                <!--     id="side-by-side" -->
-                <!-- > -->
-                <!--     <iconify-icon icon="material-symbols:side-navigation" -->
-                <!--     ></iconify-icon> -->
-                <!-- </button> -->
+                <button
+                    aria-label="Before and after side by side"
+                    title="Before and after"
+                    class={["overlay-action", showOriginal && "active"]}
+                    id="side-by-side"
+                    onclick={() => (showOriginal = !showOriginal)}
+                >
+                    <iconify-icon icon="material-symbols:side-navigation"
+                    ></iconify-icon>
+                </button>
             {/if}
         </div>
     {:else}
@@ -157,6 +183,17 @@
         &:hover {
             scale: 1.1;
         }
+
+        &.active {
+            color: var(--accent);
+        }
+    }
+
+    .img-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        gap: 0;
     }
 
     .backdrop {
