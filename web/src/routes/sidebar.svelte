@@ -1,9 +1,5 @@
 <script lang="ts">
-    import {
-        notifications,
-        NotificationLevel,
-        UiNotification,
-    } from "$lib/notifications.svelte.ts";
+    import { notifications, NotificationLevel, UiNotification } from "$lib";
     import { img_data } from "./img.svelte.ts";
 
     import Row from "$lib/row.svelte";

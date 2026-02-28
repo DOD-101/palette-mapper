@@ -4,11 +4,7 @@
     import * as wasm from "../../wasm/pkg/";
     import ClearBtn from "$lib/clear_btn.svelte";
     import PaletteSearch from "./palette_search.svelte";
-    import {
-        notifications,
-        UiNotification,
-        NotificationLevel,
-    } from "$lib/notifications.svelte.ts";
+    import { notifications, UiNotification, NotificationLevel } from "$lib";
 
     let {
         palette = $bindable(),
