@@ -16,20 +16,6 @@ Palette Mapper is split into 3 different things:
 
 <!-- TODO: See below -->
 
-- [ ] `web`
-
-    - [x] allow clicking on image to bring up preview pop-up
-
-        - [x] Before and after
-
-        - [x] Download button
-
-    - [x] fix submit button misalignment on small view widths (media query)
-
-    - [x] loading spinner (on map image button)
-
-    - [ ] add 404 page
-
 - [ ] Implement more distance algorithms
 
     - [ ] CIEDE2000
@@ -49,6 +35,24 @@ Palette Mapper is split into 3 different things:
     - [ ] Batch processing
 
     - [ ] Lightening
+
+---
+
+### Done
+
+- [x] `web`
+
+    - [x] allow clicking on image to bring up preview pop-up
+
+        - [x] Before and after
+
+        - [x] Download button
+
+    - [x] fix submit button misalignment on small view widths (media query)
+
+    - [x] loading spinner (on map image button)
+
+    - [x] add 404 page
 
 ## 🖼️ Examples 🖼️
 

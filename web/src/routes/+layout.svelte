@@ -1,6 +1,7 @@
 <script lang="ts">
     import favicon from "$lib/assets/favicon.svg";
     import Notifications from "$lib/notifications.svelte";
+    import ThemeToggle from "$lib/theme_toggle.svelte";
 
     let { children } = $props();
 </script>
@@ -17,6 +18,7 @@
 <main>
     {@render children()}
 </main>
+<ThemeToggle />
 
 <style>
     main {
