@@ -1,6 +1,5 @@
 interface ImgData {
   data: Blob;
-  // TODO: Actually make use of this
   file_name: string;
 }
 

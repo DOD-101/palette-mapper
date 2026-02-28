@@ -41,7 +41,7 @@
 
         const download_link = document.createElement("a");
         download_link.href = img;
-        download_link.download = "converted.png";
+        download_link.download = img_data.converted.file_name;
         download_link.style.opacity = "0";
         download_link.id = "dl-link";
 

@@ -16,22 +16,9 @@
     let algorithm = $state("");
 
     let image_files: FileList | undefined = $state();
-    let image_bytes: Uint8Array | undefined = $state();
-    let image_label: string = $derived.by(() => {
-        if (image_files === undefined) {
-            return "Upload";
-        }
-
-        let file = image_files.item(0);
-
-        if (file === null) {
-            return "Upload";
-        }
-
-        return file.name;
-    });
 
     let palette: string = $state("");
+    let palette_name: string = $state("");
 
     const wasmAlgorithms = async () => {
         await wasm.default();
@@ -59,14 +46,15 @@
                     reader_ev.target.result as ArrayBuffer,
                 );
 
-                image_bytes = bytes;
+                img_data.original.file_name = file.name;
+                img_data.original.data = new Blob([bytes as BlobPart]);
             };
 
             image_reader.onerror = (err) => {
                 notifications.push_notification(
                     new UiNotification(
                         NotificationLevel.Error,
-                        "Failed to read converted image: " + err,
+                        "Failed to read uploaded image: " + err,
                     ),
                 );
             };
@@ -75,12 +63,12 @@
         }
     });
 
-    function submit(
+    async function submit(
         e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
         const start = performance.now();
 
-        if (!image_bytes) {
+        if (img_data.original.data.size == 0) {
             notifications.push_notification(
                 new UiNotification(
                     NotificationLevel.Error,
@@ -110,8 +98,6 @@
                 "Mapping image. This may take a sec.",
             ),
         );
-
-        img_data.original.data = new Blob([image_bytes as BlobPart]);
         console.log(
             "Converting image with params:\n(algorithm)",
             algorithm,
@@ -128,9 +114,16 @@
         worker.onmessage = (e) => {
             console.log(`Mapped image. Took: ${performance.now() - start}ms`);
 
+            const originalNameNoExtension = img_data.original.file_name.replace(
+                /\.[^/.]+$/,
+                "",
+            );
+
             img_data.converted.data = new Blob([e.data as BlobPart], {
                 type: "image/png",
             });
+
+            img_data.converted.file_name = `${originalNameNoExtension}-${palette_name}.png`;
         };
 
         worker.onerror = (e) => {
@@ -143,7 +136,7 @@
         };
 
         worker.postMessage({
-            image_bytes: image_bytes,
+            image_bytes: await img_data.original.data.bytes(),
             palette: palette,
             algorithm: algorithm,
         });
@@ -218,12 +211,12 @@
             </select>
         </Row>
 
-        <Palette bind:palette />
+        <Palette bind:palette bind:palette_name />
 
         <Row>
             <h5 class="heading">Image</h5>
             <FileUpload
-                label={image_label}
+                label={img_data.original.file_name || "Upload"}
                 bind:files={image_files}
                 classNames="input-elm"
                 title="Select image to map."
@@ -232,7 +225,7 @@
         </Row>
 
         <button
-            onclick={(e) => submit(e)}
+            onclick={async (e) => await submit(e)}
             onmousemove={submitMouseover}
             id="submit"
             class="input-elm">Map Image!</button

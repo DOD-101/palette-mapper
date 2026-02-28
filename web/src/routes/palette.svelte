@@ -10,7 +10,10 @@
         NotificationLevel,
     } from "$lib/notifications.svelte.ts";
 
-    let { palette = $bindable() }: { palette: string } = $props();
+    let {
+        palette = $bindable(),
+        palette_name = $bindable(""),
+    }: { palette: string; palette_name: string } = $props();
 
     /** Where we are getting the palette from */
     const palette_source = {
@@ -81,6 +84,8 @@
                 }
 
                 palette = contents;
+                // fallback name since we don't know the name of the palette
+                palette_name = "mapped";
             };
 
             palette_reader.readAsText(file);
@@ -93,6 +98,7 @@
         }
 
         palette = wasm.pal_from_base(wasm.from_base_name(pal_select.slice(8)));
+        palette_name = pal_select.slice(8);
     });
 </script>
 
