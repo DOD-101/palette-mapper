@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { resolve } from "$app/paths";
+
     import SiteTitle from "$lib/site_title.svelte";
 </script>
 
@@ -7,7 +9,7 @@
 <div class="error-container">
     <h2>404 - Page Not Found</h2>
     <p>The page you're looking for doesn't exist.</p>
-    <a href="/">Go back to the homepage</a>
+    <a href={resolve("/")}>Go back to the homepage</a>
 </div>
 
 <style>
