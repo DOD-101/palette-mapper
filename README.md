@@ -16,16 +16,6 @@ Palette Mapper is split into 3 different things:
 
 <!-- TODO: See below -->
 
-- [ ] Implement more distance algorithms
-
-    - [ ] CIEDE2000
-
-    - [x] CIE Hybrid
-
-    - [x] CIE76 LAB
-
-    - [x] Manhattan Distance
-
 - [ ] Add time estimates
 
 - [ ] *(Possibly)* Expand options for cli
@@ -54,6 +44,16 @@ Palette Mapper is split into 3 different things:
 
     - [x] add 404 page
 
+- [x] Implement more distance algorithms
+
+    - [x] CIEDE2000
+
+    - [x] CIE Hybrid
+
+    - [x] CIE76 LAB
+
+    - [x] Manhattan Distance
+
 ## 🖼️ Examples 🖼️
 
 ### Tokyo Rail
@@ -74,14 +74,14 @@ Palette Mapper is split into 3 different things:
 
 <details open>
     <summary>Images</summary>
-    <img width=400 src="./assets/examples/chicago.jpg" alt="Chigao original">
-    <img width=400 src="./assets/examples/chicago_CatppuccinMocha.jpg" alt="Chigao CatppuccinMocha">
-    <img width=400 src="./assets/examples/chicago_Darcula.jpg" alt="Chigao Darcula">
-    <img width=400 src="./assets/examples/chicago_Elemental.jpg" alt="Chigao Elemental">
-    <img width=400 src="./assets/examples/chicago_Moonlight.jpg" alt="Chigao Moonlight">
-    <img width=400 src="./assets/examples/chicago_OneDark.jpg" alt="Chigao OneDark">
-    <img width=400 src="./assets/examples/chicago_RosePineDawn.jpg" alt="Chigao RosePineDawn">
-    <img width=400 src="./assets/examples/chicago_WildCherry.jpg" alt="Chigao WildCherry">
+    <img width=400 src="./assets/examples/chicago.jpg" alt="Chicago original">
+    <img width=400 src="./assets/examples/chicago_CatppuccinMocha.jpg" alt="Chicago CatppuccinMocha">
+    <img width=400 src="./assets/examples/chicago_Darcula.jpg" alt="Chicago Darcula">
+    <img width=400 src="./assets/examples/chicago_Elemental.jpg" alt="Chicago Elemental">
+    <img width=400 src="./assets/examples/chicago_Moonlight.jpg" alt="Chicago Moonlight">
+    <img width=400 src="./assets/examples/chicago_OneDark.jpg" alt="Chicago OneDark">
+    <img width=400 src="./assets/examples/chicago_RosePineDawn.jpg" alt="Chicago RosePineDawn">
+    <img width=400 src="./assets/examples/chicago_WildCherry.jpg" alt="Chicago WildCherry">
 </details>
 
 ### NYC Subway
