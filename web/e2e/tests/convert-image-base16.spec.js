@@ -5,14 +5,20 @@ test("convert image with pre-defined palette", async ({ page }, testInfo) => {
 
   const algorithm = "ManhattanDistance";
 
-  const select_algorithm = test.step("select algorithm", () => {
-    return page.locator("#algorithms").selectOption(algorithm);
+  await test.step("select algorithm", async () => {
+    const algorithm_select = page.getByRole("combobox", {
+      name: "Algorithm",
+    });
+
+    await algorithm_select.selectOption(algorithm);
+    await expect(algorithm_select).toHaveValue(algorithm);
   });
-  await expect(await select_algorithm).toEqual([algorithm]);
 
   await test.step("select palette", () => {
     return page
-      .locator(".search-container .results-box *:nth-child(5)")
+      .getByRole("list", { name: "Palette" })
+      .locator(".option-select")
+      .nth(4)
       .click();
   });
 

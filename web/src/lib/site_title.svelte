@@ -1,11 +1,10 @@
 <h1>Palette Mapper</h1>
 
 <style>
-    h1 {
-        position: absolute;
-        left: 0;
-        top: 0;
-
-        margin: 2rem;
-    }
+  h1 {
+    width: max-content;
+    margin: 1rem;
+    white-space: nowrap;
+    font-size: 3rem;
+  }
 </style>

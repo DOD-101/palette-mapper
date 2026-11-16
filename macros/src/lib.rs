@@ -81,7 +81,7 @@ impl Parse for AlgorithmsInput {
     }
 }
 
-/// The centeral *magic* enum for algorithms
+/// The central *magic* enum for algorithms
 ///
 /// ## What it does
 ///
@@ -151,7 +151,7 @@ pub fn algorithms(input: TokenStream) -> TokenStream {
         let alpha_doc = String::from(if a.alpha {
             "## Alpha Values\nThis algorithm **respects** alpha values.\nThis means `(255, 255, 255, 0) != (255, 255, 255, 255)`"
         } else {
-            "## Alpha Values\nThis algorithm **does not** respects alpha values.\nThis means `(255, 255, 255, 0) == (255, 255, 255, 255)`"
+            "## Alpha Values\nThis algorithm **does not** respect alpha values.\nThis means `(255, 255, 255, 0) == (255, 255, 255, 255)`"
         });
 
         quote! {

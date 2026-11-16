@@ -1,44 +1,119 @@
+/* ==========================================================================
+   Primitives
+   Raw color ramps. Ordered light -> dark in every theme.
+   Components must not use these directly; use the semantic tokens below.
+   ========================================================================== */
+
 :root {
-  --background: #e1e1ff;
-  --grid-lines: #d7d7f5;
+  /* Neutral */
+  --gray-50: #fafafa;
+  --gray-100: #f4f4f5;
+  --gray-200: #e4e4e7;
+  --gray-300: #d4d4d8;
+  --gray-400: #a1a1aa;
+  --gray-500: #71717a;
+  --gray-600: #52525b;
+  --gray-700: #3f3f46;
+  --gray-800: #27272a;
+  --gray-900: #18181b;
+  --gray-950: #09090b;
 
-  --text: #0e0b1e;
-  --text-alt: #e5e2f4;
-
-  --primary: #30296b;
-  --secondary: #d284a2;
-  --accent: #b95b46;
-
-  --primary: #2b2c4b;
-  --secondary: #a49fd6;
-  --accent: #a7dcd8;
-
-  --confirm: #3bc968;
-
-  /* Notifications */
-  --error: rgba(204, 2, 2, 0.2);
-  --warn: rgba(255, 103, 0, 0.2);
-  --info: rgba(110, 255, 225, 0.2);
-  --dots: #45456470;
+  /* Brand — derived from Catppuccin blue #89b4fa */
+  --brand-50: #eff7ff;
+  --brand-100: #dfeeff;
+  --brand-200: #c7deff;
+  --brand-300: #aacaff;
+  --brand-400: #89b4fa;
+  --brand-500: #729fe8;
+  --brand-600: #5886d1;
+  --brand-700: #406bb0;
+  --brand-800: #305289;
+  --brand-900: #223b64;
+  --brand-950: #11213c;
 }
 
-:root:not(.light-mode) {
-  --background: #07070c;
-  --grid-lines: #0e0e13;
+/* ==========================================================================
+   Semantic tokens — light
+   ========================================================================== */
 
-  --text: #e5e2f4;
-  --text-alt: var(--text);
+:root[data-theme="light"] {
+  color-scheme: light;
 
-  --primary: #1a1b3c;
-  --secondary: #6d2e95;
-  --accent: #30966f;
+  /* Surfaces */
+  --bg: var(--gray-50);
+  --surface: #ffffff;
+  --surface-control: var(--gray-100);
+  --surface-control-hover: var(--brand-50);
+  --surface-hover: var(--gray-100);
+  --surface-selected: var(--brand-50);
 
-  --confirm: #168039;
+  /* Text */
+  --text: var(--gray-950);
+  --text-muted: var(--gray-600);
+  --accent-contrast: #ffffff;
 
-  /* Notifications */
-  --error: rgba(204, 2, 2, 0.3);
-  --warn: rgba(255, 103, 0, 0.3);
-  --info: rgba(110, 255, 225, 0.3);
+  /* Borders */
+  --border-subtle: var(--gray-200);
+  --border: var(--gray-300);
 
-  --dots: #c4c5f950;
+  /* Accent */
+  --accent: var(--brand-700);
+
+  /* Status */
+  --confirm: #40a02b;
+  --error: #d20f39;
+  --warn: #df8e1d;
+  --info: #04a5e5;
+  --error-bg: color-mix(in srgb, var(--error) 12%, var(--surface));
+  --warn-bg: color-mix(in srgb, var(--warn) 12%, var(--surface));
+  --info-bg: color-mix(in srgb, var(--info) 12%, var(--surface));
+
+  /* App */
+  --grid-lines: var(--gray-200);
+  --dots: var(--gray-300);
+}
+
+/* ==========================================================================
+   Semantic tokens — dark
+   ========================================================================== */
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --bg: var(--gray-950);
+  --surface: var(--gray-900);
+  --surface-control: var(--gray-800);
+  --surface-control-hover: color-mix(
+    in srgb,
+    var(--brand-400) 16%,
+    var(--surface)
+  );
+  --surface-hover: var(--gray-800);
+  --surface-selected: color-mix(in srgb, var(--brand-400) 16%, var(--surface));
+
+  /* Text */
+  --text: var(--gray-50);
+  --text-muted: var(--gray-400);
+  --accent-contrast: var(--gray-950);
+
+  /* Borders */
+  --border-subtle: var(--gray-800);
+  --border: var(--gray-700);
+
+  /* Accent */
+  --accent: var(--brand-400);
+
+  /* Status */
+  --confirm: #a6e3a1;
+  --error: #f38ba8;
+  --warn: #f9e2af;
+  --info: #89dceb;
+  --error-bg: color-mix(in srgb, var(--error) 14%, var(--surface));
+  --warn-bg: color-mix(in srgb, var(--warn) 14%, var(--surface));
+  --info-bg: color-mix(in srgb, var(--info) 14%, var(--surface));
+
+  /* App */
+  --grid-lines: var(--gray-900);
+  --dots: var(--gray-700);
 }
