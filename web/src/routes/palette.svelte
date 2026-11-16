@@ -100,6 +100,15 @@
 
 <Row>
     <h5 class="heading">Palette</h5>
+
+    {#if palette_source.get() == "Undecided" || palette_source.get() == "PreDefined"}
+        <PaletteSearch bind:selected={pal_select} />
+    {/if}
+
+    {#if palette_source.get() == "Undecided"}
+        <p class="or">or</p>
+    {/if}
+
     {#if palette_source.get() == "Undecided" || palette_source.get() == "Upload"}
         <div class="row-direction">
             {#if palette_source.get() == "Upload"}
@@ -119,14 +128,6 @@
                 accept="application/json"
             />
         </div>
-    {/if}
-
-    {#if palette_source.get() == "Undecided"}
-        <p class="or">or</p>
-    {/if}
-
-    {#if palette_source.get() == "Undecided" || palette_source.get() == "PreDefined"}
-        <PaletteSearch bind:selected={pal_select} />
     {/if}
 </Row>
 

@@ -1,50 +1,52 @@
 <script lang="ts">
-    let {
-        label,
-        classNames,
-        files = $bindable(),
-        title = "",
-        accept = "",
-    }: {
-        label: string;
-        classNames?: string;
-        files: FileList | undefined;
-        title?: string;
-        accept?: string;
-    } = $props();
+  let {
+    label,
+    classNames,
+    files = $bindable(),
+    title = "",
+    accept = "",
+  }: {
+    label: string;
+    classNames?: string;
+    files: FileList | undefined;
+    title?: string;
+    accept?: string;
+  } = $props();
 
-    const id = $props.id();
+  const id = $props.id();
 </script>
 
 <label
-    class={classNames}
-    for="{id}-file_upload"
-    id="file_upload_label"
-    title={files && files.length >= 1 ? files[0].name : title}>{label}</label
+  class={classNames}
+  for="{id}-file_upload"
+  id="file_upload_label"
+  title={files && files.length >= 1 ? files[0].name : title}>{label}</label
 >
 <input type="file" id="{id}-file_upload" bind:files required {accept} />
 
 <style>
-    label {
-        display: inline-block;
-        color: var(--text);
-        text-align: center;
-        background-color: var(--secondary);
-        cursor: pointer;
-        border-radius: 3px;
-        padding: 0.1rem 0;
-        margin: 0.25rem 0.5rem;
-        overflow: hidden;
+  label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    text-align: center;
+    background-color: var(--secondary);
+    cursor: pointer;
+    border-radius: 3px;
+    padding: 0;
+    margin: 0.25rem 0.5rem;
+    overflow: hidden;
 
-        transition: all 200ms ease-in-out;
+    transition: all 200ms ease-in-out;
 
-        &:hover {
-            background-color: var(--accent);
-            scale: 1.02;
-        }
+    &:hover {
+      background-color: var(--accent);
+      scale: 1.02;
     }
+  }
 
-    input[type="file"] {
-        display: none;
-    }
+  input[type="file"] {
+    display: none;
+  }
 </style>

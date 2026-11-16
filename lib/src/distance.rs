@@ -107,6 +107,7 @@ impl<A: DistanceAlgorithm> Distance<A> {
     }
 }
 
+// TODO: Add metadata (complexity and description) to each for use in the web-ui
 palette_mapper_macros::algorithms! {
     /// [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
     EuclideanDistance

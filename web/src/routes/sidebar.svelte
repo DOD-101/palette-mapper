@@ -1,373 +1,357 @@
 <script lang="ts">
-    import { notifications, NotificationLevel, UiNotification } from "$lib";
-    import { img_data } from "./img.svelte.ts";
+  import { notifications, NotificationLevel, UiNotification } from "$lib";
+  import { img_data } from "./img.svelte.ts";
 
-    import Row from "$lib/row.svelte";
-    import FileUpload from "$lib/file_upload.svelte";
+  import Row from "$lib/row.svelte";
+  import FileUpload from "$lib/file_upload.svelte";
+  import OptionList from "$lib/option_list.svelte";
 
-    import Palette from "./palette.svelte";
+  import Palette from "./palette.svelte";
 
-    import * as wasm from "../../wasm/pkg";
+  import * as wasm from "../../wasm/pkg";
 
-    let algorithm = $state("");
+  let algorithm = $state("");
 
-    let image_files: FileList | undefined = $state();
+  let image_files: FileList | undefined = $state();
 
-    let palette: string = $state("");
-    let palette_name: string = $state("");
+  let palette: string = $state("");
+  let palette_name: string = $state("");
 
-    const wasmAlgorithms = async () => {
-        await wasm.default();
+  const wasmAlgorithms = async () => {
+    await wasm.default();
 
-        algorithm = wasm.algorithms()[0];
+    algorithm = wasm.algorithms()[0];
 
-        return wasm.algorithms();
-    };
+    return wasm.algorithms();
+  };
 
-    $effect(() => {
-        if (!image_files) {
-            return;
+  $effect(() => {
+    if (!image_files) {
+      return;
+    }
+
+    let file = image_files.item(0);
+    if (file) {
+      const image_reader = new FileReader();
+
+      image_reader.onload = (reader_ev) => {
+        if (!reader_ev.target) {
+          return;
         }
 
-        let file = image_files.item(0);
-        if (file) {
-            const image_reader = new FileReader();
+        const bytes = new Uint8Array(reader_ev.target.result as ArrayBuffer);
 
-            image_reader.onload = (reader_ev) => {
-                if (!reader_ev.target) {
-                    return;
-                }
+        img_data.original.file_name = file.name;
+        img_data.original.data = new Blob([bytes as BlobPart]);
+      };
 
-                const bytes = new Uint8Array(
-                    reader_ev.target.result as ArrayBuffer,
-                );
+      image_reader.onerror = (err) => {
+        notifications.push_notification(
+          new UiNotification(
+            NotificationLevel.Error,
+            "Failed to read uploaded image: " + err,
+          ),
+        );
+      };
 
-                img_data.original.file_name = file.name;
-                img_data.original.data = new Blob([bytes as BlobPart]);
-            };
+      image_reader.readAsArrayBuffer(file);
+    }
+  });
 
-            image_reader.onerror = (err) => {
-                notifications.push_notification(
-                    new UiNotification(
-                        NotificationLevel.Error,
-                        "Failed to read uploaded image: " + err,
-                    ),
-                );
-            };
+  async function submit(
+    e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+  ) {
+    const start = performance.now();
+    loading = true;
 
-            image_reader.readAsArrayBuffer(file);
-        }
+    if (img_data.original.data.size == 0) {
+      loading = false;
+      notifications.push_notification(
+        new UiNotification(
+          NotificationLevel.Error,
+          `No image uploaded. Nothing to convert.`,
+        ),
+      );
+
+      return;
+    }
+
+    if (!palette) {
+      loading = false;
+      notifications.push_notification(
+        new UiNotification(
+          NotificationLevel.Error,
+          `No palette set. What colors should be used?`,
+        ),
+      );
+
+      return;
+    }
+
+    animateSubmit(e);
+
+    notifications.push_notification(
+      new UiNotification(
+        NotificationLevel.Info,
+        "Mapping image. This may take a sec.",
+      ),
+    );
+    console.log(
+      "Converting image with params:\n(algorithm)",
+      algorithm,
+      "\n(palette)",
+      palette,
+      "\n(image)",
+      image_files,
+    );
+
+    let worker = new Worker(new URL("./wasm.worker.ts", import.meta.url), {
+      type: "module",
     });
 
-    async function submit(
-        e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
-    ) {
-        const start = performance.now();
-        loading = true;
+    worker.onmessage = (e) => {
+      console.log(`Mapped image. Took: ${performance.now() - start}ms`);
+      loading = false;
 
-        if (img_data.original.data.size == 0) {
-            loading = false;
-            notifications.push_notification(
-                new UiNotification(
-                    NotificationLevel.Error,
-                    `No image uploaded. Nothing to convert.`,
-                ),
-            );
+      const originalNameNoExtension = img_data.original.file_name.replace(
+        /\.[^/.]+$/,
+        "",
+      );
 
-            return;
-        }
+      img_data.converted.data = new Blob([e.data as BlobPart], {
+        type: "image/png",
+      });
 
-        if (!palette) {
-            loading = false;
-            notifications.push_notification(
-                new UiNotification(
-                    NotificationLevel.Error,
-                    `No palette set. What colors should be used?`,
-                ),
-            );
+      img_data.converted.file_name = `${originalNameNoExtension}-${palette_name}.png`;
+    };
 
-            return;
-        }
+    worker.onerror = (e) => {
+      loading = false;
+      notifications.push_notification(
+        new UiNotification(
+          NotificationLevel.Error,
+          `Failed to map image: ${e.message}`,
+        ),
+      );
+    };
 
-        animateSubmit(e);
+    worker.postMessage({
+      image_bytes: await img_data.original.data.bytes(),
+      palette: palette,
+      algorithm: algorithm,
+    });
+  }
 
-        notifications.push_notification(
-            new UiNotification(
-                NotificationLevel.Info,
-                "Mapping image. This may take a sec.",
-            ),
-        );
-        console.log(
-            "Converting image with params:\n(algorithm)",
-            algorithm,
-            "\n(palette)",
-            palette,
-            "\n(image)",
-            image_files,
-        );
+  function animateSubmit(
+    e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+  ) {
+    locked = true;
 
-        let worker = new Worker(new URL("./wasm.worker.ts", import.meta.url), {
-            type: "module",
-        });
+    let ripple = document.createElement("div");
 
-        worker.onmessage = (e) => {
-            console.log(`Mapped image. Took: ${performance.now() - start}ms`);
-            loading = false;
+    ripple.classList.add("ripple");
 
-            const originalNameNoExtension = img_data.original.file_name.replace(
-                /\.[^/.]+$/,
-                "",
-            );
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-            img_data.converted.data = new Blob([e.data as BlobPart], {
-                type: "image/png",
-            });
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
 
-            img_data.converted.file_name = `${originalNameNoExtension}-${palette_name}.png`;
-        };
+    e.currentTarget.appendChild(ripple);
 
-        worker.onerror = (e) => {
-            loading = false;
-            notifications.push_notification(
-                new UiNotification(
-                    NotificationLevel.Error,
-                    `Failed to map image: ${e.message}`,
-                ),
-            );
-        };
+    setTimeout(() => {
+      ripple.remove();
+      locked = false;
+    }, 400);
+  }
 
-        worker.postMessage({
-            image_bytes: await img_data.original.data.bytes(),
-            palette: palette,
-            algorithm: algorithm,
-        });
+  let locked = $state(false);
+  let loading = $state(false);
+
+  function submitMouseover(
+    e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+  ) {
+    let submit_btn = e.currentTarget;
+
+    if (!submit_btn) {
+      return;
     }
 
-    function animateSubmit(
-        e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
-    ) {
-        locked = true;
+    submit_btn.onmousemove = (e) => {
+      const rect = submit_btn.getBoundingClientRect(),
+        x = e.clientX - rect.left,
+        y = e.clientY - rect.top;
 
-        let ripple = document.createElement("div");
-
-        ripple.classList.add("ripple");
-
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        ripple.style.left = `${x}px`;
-        ripple.style.top = `${y}px`;
-
-        e.currentTarget.appendChild(ripple);
-
-        setTimeout(() => {
-            ripple.remove();
-            locked = false;
-        }, 400);
-    }
-
-    let locked = $state(false);
-    let loading = $state(false);
-
-    function submitMouseover(
-        e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
-    ) {
-        let submit_btn = e.currentTarget;
-
-        if (!submit_btn) {
-            return;
-        }
-
-        submit_btn.onmousemove = (e) => {
-            const rect = submit_btn.getBoundingClientRect(),
-                x = e.clientX - rect.left,
-                y = e.clientY - rect.top;
-
-            if (!locked) {
-                submit_btn.style.setProperty("--mouse-x", `${x}px`);
-                submit_btn.style.setProperty("--mouse-y", `${y}px`);
-            }
-        };
-    }
+      if (!locked) {
+        submit_btn.style.setProperty("--mouse-x", `${x}px`);
+        submit_btn.style.setProperty("--mouse-y", `${y}px`);
+      }
+    };
+  }
 </script>
 
 <div class="sidebar">
-    <div id="inputs">
-        <Row>
-            <h5 class="heading">Algorithm</h5>
-            <select
-                name="algorithm"
-                class="input-elm algorithm"
-                id="algorithms"
-                bind:value={algorithm}
-                required
-            >
-                {#await wasmAlgorithms()}
-                    <option disabled>Loading…</option>
-                {:then algos}
-                    {#each algos as algo}
-                        <option value={algo}>{algo}</option>
-                    {/each}
-                {/await}
-            </select>
-        </Row>
+  <div id="inputs">
+    <Row>
+      <h5 class="heading">Image</h5>
+      <FileUpload
+        label={img_data.original.file_name || "Upload"}
+        bind:files={image_files}
+        classNames="input-elm"
+        title="Select image to map."
+        accept="image/*"
+      />
+    </Row>
 
-        <Palette bind:palette bind:palette_name />
+    <Palette bind:palette bind:palette_name />
 
-        <Row>
-            <h5 class="heading">Image</h5>
-            <FileUpload
-                label={img_data.original.file_name || "Upload"}
-                bind:files={image_files}
-                classNames="input-elm"
-                title="Select image to map."
-                accept="image/*"
-            />
-        </Row>
+    <Row>
+      <h5 class="heading">Algorithm</h5>
+      {#await wasmAlgorithms()}
+        <p class="loading">Loading…</p>
+      {:then algos}
+        <OptionList
+          options={algos.map((algo) => ({
+            value: algo,
+            label: algo,
+          }))}
+          bind:value={algorithm}
+          label="Algorithm"
+          maxHeight="11rem"
+        />
+      {/await}
+    </Row>
 
-        <Row>
-            <button
-                onclick={async (e) => await submit(e)}
-                onmousemove={submitMouseover}
-                id="submit"
-                class="input-elm"
-                disabled={loading}
-            >
-                {#if loading}
-                    <iconify-icon icon="svg-spinners:90-ring-with-bg"
-                    ></iconify-icon>
-                {:else}
-                    Map Image!
-                {/if}
-            </button>
-        </Row>
-    </div>
+    <Row>
+      <button
+        onclick={async (e) => await submit(e)}
+        onmousemove={submitMouseover}
+        id="submit"
+        class="input-elm"
+        disabled={loading}
+      >
+        {#if loading}
+          <iconify-icon icon="svg-spinners:90-ring-with-bg"></iconify-icon>
+        {:else}
+          Map Image!
+        {/if}
+      </button>
+    </Row>
+  </div>
 </div>
 
 <style>
-    .sidebar {
-        display: flex;
-        width: fit-content;
-        height: 100vh;
-        align-items: center;
-        overflow: visible;
+  .sidebar {
+    width: 100%;
+    min-height: 0;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    contain: inline-size;
 
-        #inputs {
-            display: flex;
-            flex-direction: column;
-            padding: 5px;
-            width: 12vw;
+    #inputs {
+      width: 100%;
+      padding: 0 1rem;
+      box-sizing: border-box;
+      color: var(--text);
 
-            max-width: 200px;
-            color: var(--text);
+      border-radius: 8px;
 
-            border-radius: 8px;
+      :global(.input-elm) {
+        width: 100%;
+        height: 2rem;
+        padding: 0;
+        transition:
+          background-color 200ms ease-in-out,
+          scale 200ms ease-in-out;
+        border: 2px solid var(--grid-lines);
+        border-radius: 4px;
+        margin: 0;
+        box-sizing: border-box;
+      }
 
-            padding: 1rem;
+      :global(.heading) {
+        margin: 1rem 0 0.4rem;
+        font-size: 2rem;
+        line-height: 1.2;
+      }
 
-            :global(.input-elm) {
-                width: 10vw;
-                height: 1.2lh;
-                padding: 0;
-                max-width: 200px;
-                transition:
-                    background-color 200ms ease-in-out,
-                    scale 200ms ease-in-out;
-                border: 2px solid var(--grid-lines);
-                border-radius: 4px;
-                margin: 0;
-                box-sizing: border-box;
-            }
+      .loading {
+        margin: 0;
+        padding: 0.25rem 0;
+      }
 
-            :global(.heading) {
-                margin: 0;
-                font-size: 1rem;
-            }
+      #submit {
+        position: relative;
+        background-color: transparent;
+        font-weight: bold;
+        color: var(--text);
+        cursor: pointer;
+        overflow: hidden;
 
-            #submit {
-                position: relative;
-                background-color: transparent;
-                font-weight: bold;
-                color: var(--text);
-                cursor: pointer;
-                overflow: hidden;
+        border: 2px solid var(--grid-lines);
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin: 0.5rem auto;
+        height: 2.5rem;
 
-                border: 2px solid var(--grid-lines);
-                border-radius: 4px;
-                box-sizing: border-box;
-                margin: 0.5rem auto;
-                height: 2rem;
+        transition: all 200ms ease-in-out;
 
-                transition: all 200ms ease-in-out;
+        &:hover {
+          scale: 1.02;
 
-                &:hover {
-                    scale: 1.02;
-
-                    &::after {
-                        opacity: 1;
-                    }
-                }
-
-                &::after {
-                    opacity: 0;
-                    transition: opacity 400ms ease-in-out;
-                    content: "";
-                    height: 100%;
-                    width: 100%;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    z-index: -1;
-                    background-image: radial-gradient(
-                        circle at var(--mouse-x) var(--mouse-y),
-                        var(--confirm),
-                        transparent 40%
-                    );
-                }
-            }
-
-            .algorithm {
-                background-color: var(--secondary);
-                color: inherit;
-                border: none;
-                border-radius: 3px;
-                padding-left: 6px;
-                box-sizing: border-box;
-
-                &:hover {
-                    background-color: var(--accent);
-                }
-            }
-        }
-    }
-
-    :global(.ripple) {
-        position: absolute;
-        background-image: radial-gradient(
-            circle,
-            var(--confirm) 0%,
-            transparent 40%
-        );
-        width: 20px;
-        aspect-ratio: 1;
-        z-index: -1;
-        border-radius: 50%;
-        transform: scale(0);
-        animation: 500ms ease-in 0ms 1 running ripple-effect;
-    }
-
-    @keyframes ripple-effect {
-        from {
-            transform: scale(0);
-        }
-        40% {
-            transform: scale(40);
+          &::after {
             opacity: 1;
+          }
         }
-        to {
-            transform: scale(40);
-            opacity: 0;
+
+        &::after {
+          opacity: 0;
+          transition: opacity 400ms ease-in-out;
+          content: "";
+          height: 100%;
+          width: 100%;
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: -1;
+          background-image: radial-gradient(
+            circle at var(--mouse-x) var(--mouse-y),
+            var(--confirm),
+            transparent 40%
+          );
         }
+      }
     }
+  }
+
+  :global(.ripple) {
+    position: absolute;
+    background-image: radial-gradient(
+      circle,
+      var(--confirm) 0%,
+      transparent 40%
+    );
+    width: 20px;
+    aspect-ratio: 1;
+    z-index: -1;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: 500ms ease-in 0ms 1 running ripple-effect;
+  }
+
+  @keyframes ripple-effect {
+    from {
+      transform: scale(0);
+    }
+    40% {
+      transform: scale(40);
+      opacity: 1;
+    }
+    to {
+      transform: scale(40);
+      opacity: 0;
+    }
+  }
 </style>

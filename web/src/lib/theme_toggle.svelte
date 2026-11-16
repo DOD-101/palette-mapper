@@ -7,22 +7,13 @@
     );
 
     function changeTheme() {
-        if (light_mode) {
-            document.documentElement.classList.add("dark-mode");
-            document.documentElement.classList.remove("light-mode");
-        } else {
-            document.documentElement.classList.add("light-mode");
-            document.documentElement.classList.remove("dark-mode");
-        }
+        document.documentElement.dataset.theme = light_mode ? "dark" : "light";
 
         light_mode = !light_mode;
     }
 
     onMount(() => {
-        if (light_mode) {
-            document.documentElement.classList.add("light-mode");
-            document.documentElement.classList.remove("dark-mode");
-        }
+        document.documentElement.dataset.theme = light_mode ? "light" : "dark";
     });
 </script>
 
