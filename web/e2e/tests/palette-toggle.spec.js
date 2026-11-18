@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+import { gotoApp } from "../helpers.js";
+
 test("groups duplicate base16/24 themes behind a toggle", async ({ page }) => {
-  await page.goto("/");
+  await gotoApp(page);
 
   const list = page.getByRole("list", { name: "Palette" });
   const rows = list.locator(".option");
