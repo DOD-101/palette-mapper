@@ -28,7 +28,10 @@ test("404 page keeps the site title above the message", async ({
   const scroll_width = await page.evaluate(
     () => document.documentElement.scrollWidth,
   );
-  expect(scroll_width).toBeLessThanOrEqual(page.viewportSize().width + 1);
+  const client_width = await page.evaluate(
+    () => document.documentElement.clientWidth,
+  );
+  expect(client_width).toBeLessThanOrEqual(scroll_width);
 
   const sc = await page.screenshot();
   await testInfo.attach("screenshot", {

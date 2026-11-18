@@ -8,6 +8,7 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:8099",
     headless: true,
+    screenshot: "only-on-failure",
   },
 
   webServer: [
