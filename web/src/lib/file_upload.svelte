@@ -2,12 +2,14 @@
   let {
     label,
     classNames = "",
+    id = "",
     files = $bindable(),
     title = "",
     accept = "",
   }: {
     label: string;
     classNames?: string;
+    id?: string;
     files: FileList | undefined;
     title?: string;
     accept?: string;
@@ -19,7 +21,7 @@
   title={files && files.length >= 1 ? files[0].name : title}
 >
   {label}
-  <input type="file" bind:files {accept} />
+  <input type="file" bind:files {accept} {id} />
 </label>
 
 <style>

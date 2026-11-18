@@ -212,6 +212,7 @@
         bind:files={image_files}
         classNames="input-elm upload-btn"
         title="Select image to map."
+        id="img-upload"
         accept="image/*"
       />
     </Row>

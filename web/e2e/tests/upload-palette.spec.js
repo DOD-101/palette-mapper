@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import {
+  closeOverlay,
   convert,
   downloadMappedImage,
   expectError,
@@ -33,7 +34,7 @@ test("uses an uploaded palette for conversion", async ({ page }) => {
   );
 
   // Close the image overlay before interacting with the sidebar again.
-  await page.locator(".img-preview-btn").click();
+  await closeOverlay(page);
 
   await page.getByRole("button", { name: "click to remove" }).click();
   await expect(page.locator(".uploaded-palette")).toHaveCount(0);

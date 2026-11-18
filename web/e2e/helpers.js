@@ -55,6 +55,12 @@ export async function downloadMappedImage(page) {
   return (await download_promise).suggestedFilename();
 }
 
+/** Click outside the image (on the dimmed background) to close the overlay. */
+export async function closeOverlay(page) {
+  await page.mouse.click(5, 5);
+  await expect(page.locator(".backdrop")).toHaveCount(0);
+}
+
 /** Assert an error notification containing `text` is shown. */
 export function expectError(page, text) {
   return expect(

@@ -8,3 +8,7 @@ body {
     linear-gradient(to bottom, var(--grid-lines) 1px, transparent 1px);
   overflow-x: hidden;
 }
+
+a {
+  color: var(--accent);
+}

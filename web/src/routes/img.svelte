@@ -40,8 +40,33 @@
   });
 
   function img_click() {
-    overlay = !overlay;
+    if (overlay) {
+      return;
+    }
+
+    overlay = true;
     showOriginal = false;
+  }
+
+  function close_overlay() {
+    overlay = false;
+    showOriginal = false;
+  }
+
+  function close_on_background(e: MouseEvent) {
+    if (!overlay) {
+      return;
+    }
+
+    // The image itself and the overlay controls must not close the overlay.
+    if (
+      e.target instanceof Element &&
+      e.target.closest(".img-preview-btn, .overlay-action")
+    ) {
+      return;
+    }
+
+    close_overlay();
   }
 
   function download() {
@@ -61,6 +86,8 @@
   }
 </script>
 
+<svelte:window onclick={close_on_background} />
+
 {#if overlay}
   <div class="backdrop"></div>
 {/if}
@@ -72,19 +99,20 @@
         onclick={img_click}
         class={["img-preview-btn", overlay && "overlay"]}
       >
-        <div class="img-container">
+        <div
+          class="img-container"
+          class:side-by-side={showOriginal && img_orig}
+        >
           {#if showOriginal && img_orig}
             <img
               alt="Original"
               class={["img-preview", overlay && "overlay"]}
-              style:width="50%"
               src={img_orig}
             />
           {/if}
           <img
             alt="Converted"
             class={["img-preview", overlay && "overlay"]}
-            style:width={showOriginal ? "50%" : "100%"}
             src={img}
           />
         </div>
@@ -114,7 +142,10 @@
   {:else}
     <!-- TODO: make this show the image once uploaded and provide a better UI for uploading -->
     <div class="img-placeholder">
-      <p>Mapped image will appear here.</p>
+      <div>
+        <p>Get started by <a href="#img-upload">uploading</a> an image.</p>
+        <p>Your mapped image will appear here.</p>
+      </div>
     </div>
   {/if}
 </div>
@@ -122,27 +153,27 @@
 <style>
   .container-outer {
     position: relative;
-    display: block;
+    display: flex;
     flex: 1;
+    align-items: center;
+    justify-content: center;
     min-width: 0;
     z-index: 10;
+    padding: 2rem;
 
-    .container-inner,
-    .img-placeholder {
-      position: relative;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
+    /* Definite size so the image can size itself against the pane without
+       depending on its (shrink-wrapped) button parent. */
+    container-type: size;
 
     .container-inner {
+      position: relative;
       transition:
         scale 100ms ease-in-out,
         margin-bottom 100ms ease-in-out;
-      width: 100%;
-      height: 90vh;
+      width: fit-content;
+      max-width: 100cqw;
       display: block;
-      transform-origin: top left;
+      text-align: center;
 
       &:hover {
         scale: 1.01;
@@ -155,31 +186,42 @@
     }
 
     .img-placeholder {
-      border: 5px dashed var(--accent);
-      width: 20vw;
-      height: 20vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5rem;
+      border: 2px dashed var(--accent);
       border-radius: 16px;
 
       p {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        margin: 0;
+        text-align: center;
       }
     }
   }
 
-  .img-preview-btn,
-  .img-preview {
+  .img-preview-btn {
     display: block;
+    width: fit-content;
+    max-width: 100cqw;
+    height: fit-content;
+    padding: 0;
     background-color: transparent;
     border-radius: 0;
     border: none;
+  }
 
-    width: 100%;
-    height: 100%;
+  .img-preview {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100cqw;
+    max-height: 90cqh;
     object-fit: contain;
+  }
+
+  .img-container.side-by-side .img-preview {
+    max-width: 50cqw;
+    min-width: 0;
   }
 
   .overlay-action {
@@ -187,7 +229,7 @@
     border: none;
     color: var(--text);
     font-size: 1.5rem;
-    margin-top: 0rem;
+    margin-top: 0.5rem;
     transition: scale 200ms ease-in-out;
 
     &:hover {
@@ -201,8 +243,8 @@
 
   .img-container {
     display: flex;
-    width: 100%;
-    height: 100%;
+    width: fit-content;
+    height: fit-content;
     gap: 0;
   }
 
