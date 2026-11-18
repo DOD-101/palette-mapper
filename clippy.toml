@@ -54,6 +54,7 @@ module-item-order-groupings = [
             "enum",
             "impl",
             "union",
+            "test_binder_constraints"
         ],
 
     ],
