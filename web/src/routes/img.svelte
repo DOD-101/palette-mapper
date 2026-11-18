@@ -140,7 +140,6 @@
       {/if}
     </div>
   {:else}
-    <!-- TODO: make this show the image once uploaded and provide a better UI for uploading -->
     <div class="img-placeholder">
       <div>
         <p>Get started by <a href="#img-upload">uploading</a> an image.</p>

@@ -1,8 +1,14 @@
-FROM denoland/deno:2.6.7
+FROM mcr.microsoft.com/playwright:v1.65.1-noble
 
-ENV PATH="/root/.deno/bin:${PATH}"
+# unzip is needed for deno install
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends unzip
 
-RUN deno x -y playwright install --with-deps
+RUN curl -fsSL https://deno.land/install.sh | sh
+
+ENV PLAYWRIGHT_BROWSERS_PATH="/ms-playwright"
+ENV DENO_INSTALL="/root/.deno"
+ENV PATH="$DENO_INSTALL/bin:$PATH"
 
 WORKDIR /app
 

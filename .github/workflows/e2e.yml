@@ -32,7 +32,6 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           cache: true
-      - uses: docker/setup-docker-action@v4
       - name: Compile Wasm for web app
         run: |
           cd web
