@@ -19,11 +19,7 @@
         width: max-content;
         height: 100vh;
         min-height: 0;
-        background-color: color-mix(
-            in srgb,
-            var(--secondary) 14%,
-            var(--background)
-        );
-        border-right: 1px solid var(--secondary);
+        background-color: var(--surface);
+        border-right: 1px solid var(--border-subtle);
     }
 </style>

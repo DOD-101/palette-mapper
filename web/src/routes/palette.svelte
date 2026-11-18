@@ -1,8 +1,11 @@
 <script lang="ts">
+    import { untrack } from "svelte";
+
     import Row from "$lib/row.svelte";
     import FileUpload from "$lib/file_upload.svelte";
+    import OptionCard from "$lib/option_card.svelte";
+    import type { Option } from "$lib/option";
     import * as wasm from "../../wasm/pkg/";
-    import ClearBtn from "$lib/clear_btn.svelte";
     import PaletteSearch from "./palette_search.svelte";
     import { notifications, UiNotification, NotificationLevel } from "$lib";
 
@@ -11,25 +14,13 @@
         palette_name = $bindable(""),
     }: { palette: string; palette_name: string } = $props();
 
-    /** Where we are getting the palette from */
-    const palette_source = {
-        Upload: "Upload",
-        PreDefined: "PreDefined",
-        Undecided: "Undecided",
-        get() {
-            if (pal_select) {
-                return this.PreDefined;
-            }
-
-            if (pal_files && pal_files.length > 0) {
-                return this.Upload;
-            }
-
-            return this.Undecided;
-        },
-    } as const;
+    const uploaded_value = "uploaded::palette";
 
     let pal_files: FileList | undefined = $state();
+    let pal_select = $state("");
+    let uploaded_contents: string | null = $state(null);
+    let uploaded_colors: string[] = $state([]);
+
     let pal_label: string = $derived.by(() => {
         if (pal_files === undefined) {
             return "Upload";
@@ -44,82 +35,176 @@
         return file.name;
     });
 
-    let pal_select = $state("");
+    let uploaded_option: Option | undefined = $derived.by(() => {
+        let file = pal_files?.item(0);
+
+        if (!file || uploaded_contents === null) {
+            return undefined;
+        }
+
+        return {
+            value: uploaded_value,
+            label: file.name.replace(/\.[^/.]+$/, "") || file.name,
+            badge: "Custom",
+            colors: uploaded_colors,
+        };
+    });
+
+    /** Drop the uploaded palette and deselect it if it was in use */
+    function discard_upload() {
+        pal_files = undefined;
+        uploaded_contents = null;
+        uploaded_colors = [];
+
+        if (pal_select === uploaded_value) {
+            pal_select = "";
+        }
+    }
 
     await wasm.default();
 
-    /** Read inputted palette from the given file */
+    /** Parse an uploaded palette into CSS colors for the preview */
+    function palette_colors(contents: string): string[] {
+        try {
+            const raw = JSON.parse(contents);
+
+            if (!Array.isArray(raw)) {
+                return [];
+            }
+
+            return raw.flatMap((color) => {
+                if (typeof color === "string") {
+                    return [color];
+                }
+
+                if (!Array.isArray(color) || color.length < 3) {
+                    return [];
+                }
+
+                const [r, g, b, a] = color;
+
+                return [
+                    a === undefined
+                        ? `rgb(${r}, ${g}, ${b})`
+                        : `rgba(${r}, ${g}, ${b}, ${a / 255})`,
+                ];
+            });
+        } catch {
+            return [];
+        }
+    }
+
+    /** Read the uploaded palette and make it the selected palette */
+    $effect(() => {
+        const file = pal_files?.item(0);
+        // Read once so a newer selection made while the file is loading wins.
+        const selection_at_start = untrack(() => pal_select);
+
+        uploaded_contents = null;
+        uploaded_colors = [];
+
+        if (!file) {
+            return;
+        }
+
+        const palette_reader = new FileReader();
+
+        /** Ignore results for a file that is no longer the current selection */
+        function is_current_file(): boolean {
+            return pal_files?.item(0) === file;
+        }
+
+        palette_reader.onload = (reader_ev) => {
+            if (!is_current_file()) {
+                return;
+            }
+
+            const contents = reader_ev.target?.result;
+
+            if (typeof contents !== "string") {
+                return;
+            }
+
+            if (!wasm.is_valid_palette(contents)) {
+                notifications.push_notification(
+                    new UiNotification(
+                        NotificationLevel.Error,
+                        "The uploaded palette is invalid.",
+                    ),
+                );
+
+                discard_upload();
+
+                return;
+            }
+
+            uploaded_contents = contents;
+            uploaded_colors = palette_colors(contents);
+
+            if (pal_select === selection_at_start) {
+                pal_select = uploaded_value;
+            }
+        };
+
+        palette_reader.onerror = () => {
+            if (!is_current_file()) {
+                return;
+            }
+
+            notifications.push_notification(
+                new UiNotification(
+                    NotificationLevel.Error,
+                    "Failed to read the uploaded palette.",
+                ),
+            );
+
+            discard_upload();
+        };
+
+        palette_reader.readAsText(file);
+    });
+
+    /** Resolve the current selection into the palette string to map with */
     $effect(() => {
         palette = "";
-        let file = pal_files?.item(0);
-        if (file) {
-            const palette_reader = new FileReader();
+        palette_name = "";
 
-            palette_reader.onload = (reader_ev) => {
-                if (reader_ev.target == null) {
-                    return;
-                }
+        if (pal_select === uploaded_value) {
+            if (uploaded_contents === null) {
+                return;
+            }
 
-                const contents = reader_ev.target.result;
-
-                if (typeof contents !== "string") {
-                    return;
-                }
-
-                if (!wasm.is_valid_palette(contents)) {
-                    notifications.push_notification(
-                        new UiNotification(
-                            NotificationLevel.Error,
-                            "The uploaded palette is invalid.",
-                        ),
-                    );
-
-                    pal_files = undefined;
-
-                    return;
-                }
-
-                palette = contents;
-                // fallback name since we don't know the name of the palette
-                palette_name = "mapped";
-            };
-
-            palette_reader.readAsText(file);
+            palette = uploaded_contents;
+            // fallback name since we don't know the name of the palette
+            palette_name = "mapped";
 
             return;
         }
 
-        if (pal_select.length === 0) {
-            return;
+        if (pal_select.length > 0) {
+            palette = wasm.pal_from_base(wasm.from_base_name(pal_select));
+            palette_name = pal_select;
         }
-
-        palette = wasm.pal_from_base(wasm.from_base_name(pal_select.slice(8)));
-        palette_name = pal_select.slice(8);
     });
 </script>
 
-<Row>
+<Row classNames="palette-row">
     <h5 class="heading">Palette</h5>
 
-    {#if palette_source.get() == "Undecided" || palette_source.get() == "PreDefined"}
-        <PaletteSearch bind:selected={pal_select} />
-    {/if}
+    <PaletteSearch bind:selected={pal_select} />
 
-    {#if palette_source.get() == "Undecided"}
-        <p class="or">or</p>
-    {/if}
+    <p class="or">or</p>
 
-    {#if palette_source.get() == "Undecided" || palette_source.get() == "Upload"}
-        <div class="row-direction">
-            {#if palette_source.get() == "Upload"}
-                <ClearBtn
-                    classNames="palette clear-btn"
-                    onclick={() => {
-                        pal_files = undefined;
-                    }}
-                    hidden={!(pal_files && pal_files.length > 0)}
-                />
-            {/if}
+    <div class="row-direction">
+        {#if uploaded_option}
+            <div class="uploaded-palette">
+                <OptionCard option={uploaded_option} bind:value={pal_select} />
+
+                <button type="button" class="remove" onclick={discard_upload}>
+                    click to remove
+                </button>
+            </div>
+        {:else}
             <FileUpload
                 label={pal_label}
                 bind:files={pal_files}
@@ -127,8 +212,8 @@
                 title="Select palette to use from file."
                 accept="application/json"
             />
-        </div>
-    {/if}
+        {/if}
+    </div>
 </Row>
 
 <style>
@@ -140,12 +225,33 @@
         width: 100%;
     }
 
-    .or {
-        text-align: center;
-        margin: 0.5rem;
+    .uploaded-palette {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
     }
 
-    :global(.palette.clear-btn) {
-        margin-top: 5px;
+    .remove {
+        align-self: flex-end;
+        margin: 0;
+        padding: 0;
+        border: none;
+        background: none;
+        color: var(--text);
+        font: inherit;
+        font-size: 0.75rem;
+        text-decoration: underline;
+        opacity: 0.75;
+        cursor: pointer;
+        transition: opacity 150ms ease-in-out;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .or {
+        text-align: center;
+        margin: 0.25rem 0;
     }
 </style>

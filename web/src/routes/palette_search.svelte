@@ -1,58 +1,51 @@
 <script lang="ts">
-  import ClearBtn from "$lib/clear_btn.svelte";
   import OptionList from "$lib/option_list.svelte";
+  import type { Option, Variant } from "$lib/option";
   import * as wasm from "../../wasm/pkg/";
   import "iconify-icon";
 
   let { selected = $bindable() }: { selected: string } = $props();
 
-  let selected_pretty = $derived.by(() => {
-    if (selected.match(/^base/)) {
-      const palette = selected.slice(8);
-      const base = palette.slice(4, 6);
-      const name = palette.slice(6);
-
-      return `${name} (Base${base})`;
-    }
-
-    return "";
-  });
-
   let searched = $state("");
 
-  type PaletteVariant = {
-    value: string;
-    badge: string;
-    colors: string[];
-  };
-
-  type PaletteOption = {
-    value: string;
-    label: string;
-    variants: PaletteVariant[];
-  };
+  type PaletteGroup = Option & { variants: Variant[] };
 
   await wasm.default();
 
-  const palette_groups = new Map<string, PaletteOption>();
+  /**
+   * Split a `BaseBoth` display name (`Base16<name>` / `Base24<name>`) into its
+   * badge and human-readable label.
+   */
+  function describe_palette(palette: string): { badge: string; label: string } {
+    return {
+      badge: `Base${palette.slice(4, 6)}`,
+      label: palette.slice(6),
+    };
+  }
+
+  function palette_colors(palette: string): string[] {
+    const base = wasm.from_base_name(palette);
+
+    return JSON.parse(wasm.pal_from_base(base)) as string[];
+  }
+
+  const palette_groups = new Map<string, PaletteGroup>();
 
   for (const palette of wasm.base_both()) {
-    const variant: PaletteVariant = {
-      value: `base16::${palette}`,
-      badge: `Base${palette.slice(4, 6)}`,
-      colors: JSON.parse(
-        wasm.pal_from_base(wasm.from_base_name(palette)),
-      ) as string[],
+    const { badge, label } = describe_palette(palette);
+    const variant: Variant = {
+      value: palette,
+      badge,
+      colors: palette_colors(palette),
     };
 
-    const label = palette.slice(6);
     const group = palette_groups.get(label);
 
     if (group) {
       group.variants.push(variant);
     } else {
       palette_groups.set(label, {
-        value: variant.value,
+        value: palette,
         label,
         variants: [variant],
       });
@@ -63,109 +56,118 @@
 
   for (const palette of palettes) {
     palette.variants.sort((a, b) => a.badge.localeCompare(b.badge));
+    palette.value = palette.variants[0].value;
   }
 
-  function search_theme(palette: PaletteOption) {
-    // smart-case
+  function search_theme(palette: PaletteGroup): boolean {
     const term = `${palette.label} ${palette.variants
       .map((variant) => variant.badge)
       .join(" ")}`;
 
-    if (searched.toLowerCase() == searched) {
-      return term.toLowerCase().includes(searched);
-    }
-
-    return term.includes(searched);
+    // smart-case: lowercase queries match case-insensitively
+    return searched.toLowerCase() === searched
+      ? term.toLowerCase().includes(searched)
+      : term.includes(searched);
   }
 
-  let palette_options = $derived.by(() => palettes.filter(search_theme));
+  const palette_options = $derived(palettes.filter(search_theme));
 </script>
 
 <div class="search-container">
-  <div class="search-box input-elm">
-    {#if selected}
-      <ClearBtn
-        onclick={() => {
-          selected = "";
-          searched = "";
-        }}
-        size={1}
-        classNames="palette-search-clear"
-      />
-    {:else}
-      <iconify-icon icon="material-symbols:search-rounded"> </iconify-icon>
-    {/if}
+  <div class="search-box">
+    <iconify-icon icon="material-symbols:search-rounded"></iconify-icon>
 
     <input
       type="search"
       bind:value={searched}
-      placeholder={selected ? selected_pretty : "Search palette"}
-      aria-label="Search palette"
+      placeholder="Search palettes"
+      aria-label="Search palettes"
     />
   </div>
+
+  <div class="search-divider" aria-hidden="true"></div>
 
   <OptionList
     options={palette_options}
     bind:value={selected}
     label="Palette"
-    maxHeight="45vh"
+    maxHeight="none"
   />
 </div>
 
 <style>
   .search-container {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
     width: 100%;
   }
 
   .search-box {
     display: flex;
+    flex: none;
+    flex-direction: row;
     align-items: center;
+    gap: 0.5rem;
     position: relative;
     width: 100%;
-    margin-bottom: 0.35rem;
-    padding: 0 0.25rem;
+    padding: 0.6rem 0.7rem;
     box-sizing: border-box;
-    background-color: var(--secondary);
-    border-radius: 6px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    background-color: var(--surface-control);
+    transition:
+      border-color 150ms ease-in-out,
+      background-color 150ms ease-in-out;
+
+    &:focus-within {
+      border-color: var(--accent);
+      background-color: var(--surface-control-hover);
+    }
 
     input {
-      width: 100%;
-      margin-left: 1.1rem;
-      padding: 0.1rem 0;
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      appearance: none;
       border: none;
       background-color: transparent;
       color: var(--text);
       font: inherit;
       box-sizing: border-box;
-      transition: scale 200ms ease-in-out;
+
+      &::placeholder {
+        color: var(--text-muted);
+      }
 
       &:focus {
         outline: none;
         box-shadow: none;
       }
+
+      &::-webkit-search-cancel-button {
+        display: none;
+      }
     }
 
     iconify-icon {
-      position: absolute;
-      transition: scale 200ms ease-in-out;
-
-      top: 50%;
-      left: 2px;
-
-      transform: translateY(-50%);
+      flex: none;
+      color: var(--accent);
     }
+  }
 
-    :global(.palette-search-clear) {
-      position: absolute;
-      top: 50%;
-      left: 2px;
-      background-color: transparent;
+  .search-divider {
+    flex: none;
+    width: 100%;
+    height: 1px;
+    margin: 0.55rem 0;
+    background-color: var(--border-subtle);
+  }
 
-      transform: translateY(-50%);
-    }
-
-    &:hover iconify-icon {
-      scale: 1.05;
-    }
+  .search-container :global(.option-list) {
+    flex: 1;
+    min-height: 5rem;
   }
 </style>

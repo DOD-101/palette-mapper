@@ -1,13 +1,18 @@
 <script lang="ts">
-    let { children }: { children: any } = $props();
+  import type { Snippet } from "svelte";
+
+  let {
+    children,
+    classNames = "",
+  }: { children?: Snippet; classNames?: string } = $props();
 </script>
 
-<div class="row">
-    {@render children?.()}
+<div class={["row", classNames]}>
+  {@render children?.()}
 </div>
 
 <style>
-    .row {
-        padding: 5px 0;
-    }
+  .row {
+    padding: 3px 0;
+  }
 </style>

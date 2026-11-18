@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { untrack } from "svelte";
+  import { onDestroy, untrack } from "svelte";
   import { img_data } from "./img.svelte.ts";
   import "iconify-icon";
 
@@ -10,7 +10,7 @@
   let showOriginal: boolean = $state(false);
 
   $effect(() => {
-    if (img_data.converted.data.size != 0) {
+    if (img_data.converted.data.size !== 0) {
       const old = untrack(() => img);
       if (old) {
         URL.revokeObjectURL(old);
@@ -20,12 +20,22 @@
   });
 
   $effect(() => {
-    if (img_data.original.data.size != 0) {
+    if (img_data.original.data.size !== 0) {
       const old = untrack(() => img_orig);
       if (old) {
         URL.revokeObjectURL(old);
       }
       img_orig = URL.createObjectURL(img_data.original.data);
+    }
+  });
+
+  onDestroy(() => {
+    if (img) {
+      URL.revokeObjectURL(img);
+    }
+
+    if (img_orig) {
+      URL.revokeObjectURL(img_orig);
     }
   });
 

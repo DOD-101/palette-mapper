@@ -4,9 +4,10 @@
 
   import Row from "$lib/row.svelte";
   import FileUpload from "$lib/file_upload.svelte";
-  import OptionList from "$lib/option_list.svelte";
 
   import Palette from "./palette.svelte";
+
+  import "iconify-icon";
 
   import * as wasm from "../../wasm/pkg";
 
@@ -17,45 +18,56 @@
   let palette: string = $state("");
   let palette_name: string = $state("");
 
-  const wasmAlgorithms = async () => {
+  let locked = $state(false);
+  let loading = $state(false);
+
+  async function load_algorithms() {
     await wasm.default();
 
     algorithm = wasm.algorithms()[0];
 
     return wasm.algorithms();
-  };
+  }
 
   $effect(() => {
-    if (!image_files) {
+    const file = image_files?.item(0);
+
+    if (!file) {
       return;
     }
 
-    let file = image_files.item(0);
-    if (file) {
-      const image_reader = new FileReader();
+    const image_reader = new FileReader();
 
-      image_reader.onload = (reader_ev) => {
-        if (!reader_ev.target) {
-          return;
-        }
+    image_reader.onload = (reader_ev) => {
+      // Ignore results for a file that is no longer the current selection.
+      if (image_files?.item(0) !== file) {
+        return;
+      }
 
-        const bytes = new Uint8Array(reader_ev.target.result as ArrayBuffer);
+      const bytes = reader_ev.target?.result;
 
-        img_data.original.file_name = file.name;
-        img_data.original.data = new Blob([bytes as BlobPart]);
-      };
+      if (!(bytes instanceof ArrayBuffer)) {
+        return;
+      }
 
-      image_reader.onerror = (err) => {
-        notifications.push_notification(
-          new UiNotification(
-            NotificationLevel.Error,
-            "Failed to read uploaded image: " + err,
-          ),
-        );
-      };
+      img_data.original.file_name = file.name;
+      img_data.original.data = new Blob([bytes]);
+    };
 
-      image_reader.readAsArrayBuffer(file);
-    }
+    image_reader.onerror = () => {
+      if (image_files?.item(0) !== file) {
+        return;
+      }
+
+      notifications.push_notification(
+        new UiNotification(
+          NotificationLevel.Error,
+          "Failed to read the uploaded image.",
+        ),
+      );
+    };
+
+    image_reader.readAsArrayBuffer(file);
   });
 
   async function submit(
@@ -64,12 +76,12 @@
     const start = performance.now();
     loading = true;
 
-    if (img_data.original.data.size == 0) {
+    if (img_data.original.data.size === 0) {
       loading = false;
       notifications.push_notification(
         new UiNotification(
           NotificationLevel.Error,
-          `No image uploaded. Nothing to convert.`,
+          "No image uploaded. Nothing to convert.",
         ),
       );
 
@@ -81,7 +93,7 @@
       notifications.push_notification(
         new UiNotification(
           NotificationLevel.Error,
-          `No palette set. What colors should be used?`,
+          "No palette set. What colors should be used?",
         ),
       );
 
@@ -96,22 +108,29 @@
         "Mapping image. This may take a sec.",
       ),
     );
-    console.log(
-      "Converting image with params:\n(algorithm)",
-      algorithm,
-      "\n(palette)",
-      palette,
-      "\n(image)",
-      image_files,
-    );
 
-    let worker = new Worker(new URL("./wasm.worker.ts", import.meta.url), {
+    if (import.meta.env.DEV) {
+      console.log(
+        "Converting image with params:\n(algorithm)",
+        algorithm,
+        "\n(palette)",
+        palette,
+        "\n(image)",
+        image_files,
+      );
+    }
+
+    const worker = new Worker(new URL("./wasm.worker.ts", import.meta.url), {
       type: "module",
     });
 
     worker.onmessage = (e) => {
-      console.log(`Mapped image. Took: ${performance.now() - start}ms`);
+      worker.terminate();
       loading = false;
+
+      if (import.meta.env.DEV) {
+        console.log(`Mapped image. Took: ${performance.now() - start}ms`);
+      }
 
       const originalNameNoExtension = img_data.original.file_name.replace(
         /\.[^/.]+$/,
@@ -126,6 +145,7 @@
     };
 
     worker.onerror = (e) => {
+      worker.terminate();
       loading = false;
       notifications.push_notification(
         new UiNotification(
@@ -147,7 +167,7 @@
   ) {
     locked = true;
 
-    let ripple = document.createElement("div");
+    const ripple = document.createElement("div");
 
     ripple.classList.add("ripple");
 
@@ -166,28 +186,20 @@
     }, 400);
   }
 
-  let locked = $state(false);
-  let loading = $state(false);
-
-  function submitMouseover(
+  function track_mouse(
     e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
   ) {
-    let submit_btn = e.currentTarget;
-
-    if (!submit_btn) {
+    if (locked) {
       return;
     }
 
-    submit_btn.onmousemove = (e) => {
-      const rect = submit_btn.getBoundingClientRect(),
-        x = e.clientX - rect.left,
-        y = e.clientY - rect.top;
+    const rect = e.currentTarget.getBoundingClientRect();
 
-      if (!locked) {
-        submit_btn.style.setProperty("--mouse-x", `${x}px`);
-        submit_btn.style.setProperty("--mouse-y", `${y}px`);
-      }
-    };
+    e.currentTarget.style.setProperty(
+      "--mouse-x",
+      `${e.clientX - rect.left}px`,
+    );
+    e.currentTarget.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
   }
 </script>
 
@@ -198,7 +210,7 @@
       <FileUpload
         label={img_data.original.file_name || "Upload"}
         bind:files={image_files}
-        classNames="input-elm"
+        classNames="input-elm upload-btn"
         title="Select image to map."
         accept="image/*"
       />
@@ -208,25 +220,30 @@
 
     <Row>
       <h5 class="heading">Algorithm</h5>
-      {#await wasmAlgorithms()}
+      {#await load_algorithms()}
         <p class="loading">Loading…</p>
       {:then algos}
-        <OptionList
-          options={algos.map((algo) => ({
-            value: algo,
-            label: algo,
-          }))}
-          bind:value={algorithm}
-          label="Algorithm"
-          maxHeight="11rem"
-        />
+        <div class="algorithm-select">
+          <select bind:value={algorithm} aria-label="Algorithm">
+            {#each algos as algo}
+              <option value={algo}>{algo}</option>
+            {/each}
+          </select>
+
+          <iconify-icon
+            icon="material-symbols:arrow-drop-down-rounded"
+            width="1.5rem"
+            height="1.5rem"
+          >
+          </iconify-icon>
+        </div>
       {/await}
     </Row>
 
     <Row>
       <button
-        onclick={async (e) => await submit(e)}
-        onmousemove={submitMouseover}
+        onclick={submit}
+        onmousemove={track_mouse}
         id="submit"
         class="input-elm"
         disabled={loading}
@@ -243,31 +260,51 @@
 
 <style>
   .sidebar {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
     width: 100%;
     min-height: 0;
-    align-items: center;
-    justify-content: center;
     overflow-y: auto;
     contain: inline-size;
 
     #inputs {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
       width: 100%;
-      padding: 0 1rem;
+      min-height: 0;
+      padding: 0 1rem 2rem;
       box-sizing: border-box;
       color: var(--text);
 
       border-radius: 8px;
 
+      :global(.row) {
+        flex: none;
+      }
+
+      :global(.palette-row) {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        min-height: 20rem;
+      }
+
+      :global(.upload-btn) {
+        margin-inline: 0;
+      }
+
       :global(.input-elm) {
         width: 100%;
-        height: 2rem;
+        height: 3rem;
+        /* margin: 0 1rem; */
         padding: 0;
         transition:
           background-color 200ms ease-in-out,
           scale 200ms ease-in-out;
-        border: 2px solid var(--grid-lines);
+        border: 2px solid var(--border);
         border-radius: 4px;
-        margin: 0;
         box-sizing: border-box;
       }
 
@@ -282,7 +319,54 @@
         padding: 0.25rem 0;
       }
 
+      .algorithm-select {
+        position: relative;
+        width: 100%;
+
+        select {
+          width: 100%;
+          height: 3rem;
+          padding: 0 2.75rem 0 0.85rem;
+          appearance: none;
+          border: 2px solid var(--border);
+          border-radius: 4px;
+          background-color: var(--surface-control);
+          color: var(--text);
+          font: inherit;
+          box-sizing: border-box;
+          cursor: pointer;
+          transition:
+            background-color 200ms ease-in-out,
+            border-color 200ms ease-in-out;
+
+          &:hover {
+            background-color: var(--surface-control-hover);
+          }
+
+          &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+          }
+
+          option {
+            background-color: var(--surface);
+            color: var(--text);
+          }
+        }
+
+        iconify-icon {
+          position: absolute;
+          top: 50%;
+          right: 0.75rem;
+          transform: translateY(-50%);
+          color: var(--text);
+          pointer-events: none;
+        }
+      }
+
       #submit {
+        --submit-glow: var(--accent);
+
         position: relative;
         background-color: transparent;
         font-weight: bold;
@@ -290,10 +374,10 @@
         cursor: pointer;
         overflow: hidden;
 
-        border: 2px solid var(--grid-lines);
+        border: 2px solid var(--border);
         border-radius: 4px;
         box-sizing: border-box;
-        margin: 0.5rem auto;
+        margin: 2rem auto;
         height: 2.5rem;
 
         transition: all 200ms ease-in-out;
@@ -304,6 +388,10 @@
           &::after {
             opacity: 1;
           }
+        }
+
+        &:disabled {
+          --submit-glow: var(--confirm);
         }
 
         &::after {
@@ -318,7 +406,7 @@
           z-index: -1;
           background-image: radial-gradient(
             circle at var(--mouse-x) var(--mouse-y),
-            var(--confirm),
+            var(--submit-glow),
             transparent 40%
           );
         }
@@ -330,7 +418,7 @@
     position: absolute;
     background-image: radial-gradient(
       circle,
-      var(--confirm) 0%,
+      var(--submit-glow) 0%,
       transparent 40%
     );
     width: 20px;

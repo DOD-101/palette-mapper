@@ -1,7 +1,7 @@
 <script lang="ts">
   let {
     label,
-    classNames,
+    classNames = "",
     files = $bindable(),
     title = "",
     accept = "",
@@ -12,26 +12,25 @@
     title?: string;
     accept?: string;
   } = $props();
-
-  const id = $props.id();
 </script>
 
 <label
   class={classNames}
-  for="{id}-file_upload"
-  id="file_upload_label"
-  title={files && files.length >= 1 ? files[0].name : title}>{label}</label
+  title={files && files.length >= 1 ? files[0].name : title}
 >
-<input type="file" id="{id}-file_upload" bind:files required {accept} />
+  {label}
+  <input type="file" bind:files {accept} />
+</label>
 
 <style>
   label {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text);
     text-align: center;
-    background-color: var(--secondary);
+    background-color: var(--surface-control);
     cursor: pointer;
     border-radius: 3px;
     padding: 0;
@@ -41,12 +40,26 @@
     transition: all 200ms ease-in-out;
 
     &:hover {
-      background-color: var(--accent);
+      background-color: var(--surface-control-hover);
       scale: 1.02;
+    }
+
+    &:focus-within {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
     }
   }
 
+  /* Keep the file input focusable for keyboard users while hiding it visually. */
   input[type="file"] {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
   }
 </style>
