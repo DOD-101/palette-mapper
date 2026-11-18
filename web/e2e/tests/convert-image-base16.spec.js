@@ -1,7 +1,15 @@
 import { expect, test } from "@playwright/test";
 
+import {
+  convert,
+  downloadMappedImage,
+  gotoApp,
+  selectPalette,
+  uploadImage,
+} from "../helpers.js";
+
 test("convert image with pre-defined palette", async ({ page }, testInfo) => {
-  await page.goto("/");
+  await gotoApp(page);
 
   const algorithm = "ManhattanDistance";
 
@@ -14,34 +22,27 @@ test("convert image with pre-defined palette", async ({ page }, testInfo) => {
     await expect(algorithm_select).toHaveValue(algorithm);
   });
 
-  await test.step("select palette", () => {
-    return page
-      .getByRole("list", { name: "Palette" })
-      .locator(".option-select")
-      .nth(4)
-      .click();
-  });
+  const row = await test.step("select palette", () =>
+    selectPalette(page, "tokyonightstorm"));
 
-  await test.step("upload image", async () => {
-    return await page
-      .getByTitle("Select image to map.")
-      .setInputFiles("test-imgs/diagonal_rgb_gradient_500x500.png");
-  });
+  await test.step("upload image", () => uploadImage(page));
 
-  await test.step("convert", async () => {
-    return await page.locator("#submit").click();
-  });
+  await test.step("convert", () => convert(page));
 
-  const img_src = await test.step("check output", async () => {
-    return await page.locator(".img-preview");
+  await test.step("download the mapped image", async () => {
+    const label = await row.locator(".option-label").innerText();
+    const badge = await row
+      .locator(".option-badge.toggle .toggle-option.active")
+      .innerText();
+
+    expect(await downloadMappedImage(page)).toBe(
+      `diagonal_rgb_gradient_500x500-${badge}${label}.png`,
+    );
   });
-  await expect(await img_src).toHaveAttribute("src", /blob:/);
 
   const sc = await page.screenshot();
   await testInfo.attach("screenshot", {
     body: sc,
     contentType: "image/png",
   });
-
-  expect;
 });
